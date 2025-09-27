@@ -20,26 +20,6 @@ try:
         description VARCHAR(250) NOT NULL
         );
     """)
-
-    # Delete data from the table before inserting new data
-    """
-    env_data = pd.read_csv('server/csv_files/env.csv', delimiter=',')
-
-    #Fill the table
-    for i,row in env_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO Env VALUES (%s,%s,%s)"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM Env")
-    myresult = mycursor.fetchall()
-    print("\nEnv\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
 
@@ -53,26 +33,6 @@ try:
         availability VARCHAR(50) NOT NULL
         );
     """)
-
-    # Delete data from the table before inserting new data
-    """
-    proj_data = pd.read_csv('server/csv_files/project.csv', delimiter=',')
-    
-    #Fill the table
-    for i,row in proj_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO Project VALUES (%s,%s,%s,%s)"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM Project")
-    myresult = mycursor.fetchall()
-    print("\nProject\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
 
@@ -85,26 +45,6 @@ try:
         description VARCHAR(255) NOT NULL
         );
     """)
-
-    # Delete data from the table before inserting new data
-    """
-    skill_data = pd.read_csv('server/csv_files/skill.csv', delimiter=',')
-    
-    #Fill the table
-    for i,row in skill_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO Skill VALUES (%s,%s,%s)"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM Skill")
-    myresult = mycursor.fetchall()
-    print("\nSkill\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
 
@@ -124,26 +64,6 @@ try:
         anni_di_esperienza INT NOT NULL
         );
     """)
-
-    # Delete data from the table before inserting new data
-    """
-    user_data = pd.read_csv('server/csv_files/user.csv', delimiter=',')
-    
-    #Fill the table
-    for i,row in user_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s )"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM User")
-    myresult = mycursor.fetchall()
-    print("\nUser\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
     #------------------------------------------------------------------------------------------------------
@@ -159,26 +79,6 @@ try:
         FOREIGN KEY (user_id) REFERENCES User(user_id)
     );
     """)
-
-    # Delete data from the table before inserting new data
-    """
-    user_project_data = pd.read_csv('server/csv_files/project_user.csv', delimiter=',')
-    
-    #Fill the table
-    for i,row in user_project_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO Project_user VALUES (%s,%s,%s,%s)"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM Project_user")
-    myresult = mycursor.fetchall()
-    print("\nUser_Project\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
 
@@ -193,26 +93,6 @@ try:
         FOREIGN KEY (skill_id) REFERENCES Skill(skill_id)
     );
     """)
-
-    """
-    # Delete data from the table before inserting new data
-    project_skill_data = pd.read_csv('server/csv_files/skill_project.csv', delimiter=',')
-    
-    #Fill the table
-    for i,row in project_skill_data.iterrows():
-        cursor = mydb.cursor()
-        #here %S means string values 
-        sql = "INSERT INTO Project_user VALUES (%s,%s)"
-        cursor.execute(sql, tuple(row))
-        mydb.commit()# the connection is not auto committed by default, so we must commit to save our changes
-
-    #Check if the table has been filled
-    mycursor.execute("SELECT * FROM Project_skill")
-    myresult = mycursor.fetchall()
-    print("\nProject_Skill\n")
-    for x in myresult:
-        print(x)
-    """
     #------------------------------------------------------------------------------------------------------
 
 
@@ -241,7 +121,97 @@ try:
         FOREIGN KEY (skill_id) REFERENCES Skill(skill_id)
     );
     """)
+    #------------------------------------------------------------------------------------------------------
 
+
+    #------------------------------------------------------------------------------------------------------
+    CSV_FILES = [
+        'env',
+        'project',
+        'skill',
+        'user',
+
+        'skill_project',
+        'project_env',
+        'project_user',
+        'user_skill'
+    ]
+
+    mycursor.execute("DELETE FROM User_skill")
+    mycursor.execute("DELETE FROM Project_env")
+    mycursor.execute("DELETE FROM Project_skill")
+    mycursor.execute("DELETE FROM Project_user")
+    mycursor.execute("DELETE FROM User")
+    mycursor.execute("DELETE FROM Skill")
+    mycursor.execute("DELETE FROM Project")
+    mycursor.execute("DELETE FROM Env")
+    mydb.commit()
+    for files in CSV_FILES:
+        print(files)
+        match files:
+            case 'env':
+                data = pd.read_csv('server/csv_files/env.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Env VALUES (%s, %s, %s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+
+            case 'user':
+                data = pd.read_csv('server/csv_files/user.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+            case 'project':
+                print("Ciaoo")
+                data = pd.read_csv('server/csv_files/project.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Project VALUES (%s,%s,%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+            case 'skill':
+                data = pd.read_csv('server/csv_files/skill.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Skill VALUES (%s,%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+            #Tabelle Relazioni---------------------------------------------------------------------------------------
+            case 'skill_project':
+                data = pd.read_csv('server/csv_files/skill_project.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Project_skill VALUES (%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+                print("Sucaaaaaaaaaaaaa")
+            case 'project_env':
+                data = pd.read_csv('server/csv_files/project_env.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Project_env VALUES (%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+                print("Sucaaaaaaaaaaaaa")
+            case 'project_user':
+                data = pd.read_csv('server/csv_files/project_user.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Project_user VALUES (%s,%s,%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+                print("Sucaaaaaaaaaaaaa")
+            case 'user_skill':
+                data = pd.read_csv('server/csv_files/user_skill.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO User_skill VALUES (%s,%s)"
+                    cursor.execute(sql, tuple(row))
+                    mydb.commit()
+                print("Sucaaaaaaaaaaaaa")
 
 except mysql.connector.Error as err:
     print(f"⚠️ Error connecting to MariaDB: {err}")
@@ -249,3 +219,20 @@ finally:
     if 'mydb' in locals() and mydb.is_connected():
         mycursor.close()
         mydb.close()
+
+
+"""
+
+            case 'skill_project.csv':
+                data = pd.read_csv('server/csv_files/skill_project.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO Project_skill VALUES (%s,%s)"
+                    cursor.execute(sql, tuple(row))
+            case 'user_skill.csv':
+                data = pd.read_csv('server/csv_files/user_skill.csv', delimiter=',')
+                for i,row in data.iterrows():
+                    cursor = mydb.cursor()
+                    sql = "INSERT INTO User_skill (%s,%s)"
+                    cursor.execute(sql, tuple(row))
+            """
