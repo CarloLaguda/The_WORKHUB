@@ -1,0 +1,21 @@
+skill_id,skill_name,description
+1,HTML,Markup language for web pages
+2,CSS,Style sheets for web pages
+3,JavaScript,Client-side scripting
+4,SQL,Relational queries and design
+5,Python,General-purpose programming
+6,Project Management,Planning and execution
+7,Imbiancaggio,Wall painting and finishing
+8,Idraulica,Plumbing work
+9,Marketing,Marketing strategy and execution
+10,Excel,Spreadsheets and data analysis
+11,Node.js,Server-side JavaScript
+12,React,Frontend framework
+13,Photoshop,Image editing
+14,UX Design,User experience design
+15,DevOps,CI/CD and infrastructure
+16,SQL Server,MS SQL Server administration
+17,Docker,Containerization
+18,Content Writing,Copywriting and content creation
+19,Carpentry,Woodwork and fixtures
+20,Testing,Software testing and QA

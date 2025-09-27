@@ -1,0 +1,36 @@
+project_id,title,description,availability
+1,Website Redesign,Complete overhaul of corporate website,open
+2,Database Migration,Migrate legacy DB to cloud,full
+3,Marketing Campaign,Launch new product campaign,open
+4,App Development,Build mobile app MVP,open
+5,Office Renovation,Repaint and basic repairs,open
+6,Ecommerce Platform,New e-shop implementation,full
+7,Data Warehouse,Consolidate analytics data,open
+8,SEO Optimization,Improve organic traffic,open
+9,Company Rebrand,New visual identity and assets,open
+10,CI/CD Pipeline,Set up automated deploys,open
+11,Interior Carpentry,Install shelves and cabinets,open
+12,Plumbing Upgrade,Replace pipes in block B,open
+13,Content Hub,Centralize blog and documentation,full
+14,UX Refresh,Improve user flows and interactions,open
+15,Legacy Cleanup,Remove deprecated code and modules,full
+16,Product Photoshoot,Create marketing visuals and assets,open
+17,Excel Automation,Macros and reports automation,open
+18,Docker Migration,Containerize backend services,full
+19,Customer Survey,Market research and analysis,open
+20,Testing Suite,Build automated test suites,open
+21,Frontend Revamp,Migrate frontend to React,open
+22,Imbiancatura App.to,Full apartment painting and finishing,full
+23,Social Media Plan,Quarterly content calendar and ads,open
+24,Analytics Dashboard,KPI tracking and visualizations,open
+25,Security Audit,Penetration testing and remediation,open
+26,Training Program,Internal upskilling and workshops,open
+27,API Gateway,Centralize and secure microservice APIs,open
+28,Photo Retouching,Edit and retouch product photos,open
+29,Office Furniture,Procurement and installation of desks,open
+30,Localization,Translate app and content to IT/EN,open
+31,Backup Strategy,Daily backups and retention policy,open
+32,Recruiting Drive,Hire three backend developers,open
+33,Accessibility Fixes,Make site WCAG compliant,full
+34,Prototype IoT,Develop small smart device prototype,open
+35,Migration Wordpress,Move corporate blog to headless CMS,open

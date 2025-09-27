@@ -5,4 +5,4 @@ sudo mariadb
 pip install mysql-connector-python 
 pip install pandas
 sudo npm install -g @angular/cli
-python3 .devconatiner/main.py
+python3 server/main.py
