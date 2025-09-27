@@ -150,7 +150,7 @@ try:
         print(files)
         match files:
             case 'env':
-                data = pd.read_csv('server/csv_files/env.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/env.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Env VALUES (%s, %s, %s)"
@@ -158,7 +158,7 @@ try:
                     mydb.commit()
 
             case 'user':
-                data = pd.read_csv('server/csv_files/user.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/user.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -166,14 +166,14 @@ try:
                     mydb.commit()
             case 'project':
                 print("Ciaoo")
-                data = pd.read_csv('server/csv_files/project.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/project.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project VALUES (%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
             case 'skill':
-                data = pd.read_csv('server/csv_files/skill.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/skill.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Skill VALUES (%s,%s,%s)"
@@ -181,7 +181,7 @@ try:
                     mydb.commit()
             #Tabelle Relazioni---------------------------------------------------------------------------------------
             case 'skill_project':
-                data = pd.read_csv('server/csv_files/skill_project.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/skill_project.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_skill VALUES (%s,%s)"
@@ -189,7 +189,7 @@ try:
                     mydb.commit()
                 print("Sucaaaaaaaaaaaaa")
             case 'project_env':
-                data = pd.read_csv('server/csv_files/project_env.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/project_env.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_env VALUES (%s,%s)"
@@ -197,7 +197,7 @@ try:
                     mydb.commit()
                 print("Sucaaaaaaaaaaaaa")
             case 'project_user':
-                data = pd.read_csv('server/csv_files/project_user.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/project_user.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_user VALUES (%s,%s,%s,%s)"
@@ -205,7 +205,7 @@ try:
                     mydb.commit()
                 print("Sucaaaaaaaaaaaaa")
             case 'user_skill':
-                data = pd.read_csv('server/csv_files/user_skill.csv', delimiter=',')
+                data = pd.read_csv('WorkHub/server/csv_files/user_skill.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO User_skill VALUES (%s,%s)"
