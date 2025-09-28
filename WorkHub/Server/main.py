@@ -1,7 +1,7 @@
 import mysql.connector
 import pandas as pd
 
-#Create table
+#Connection to DB and Create Table
 try:
     mydb = mysql.connector.connect(
         host="localhost",
@@ -187,7 +187,6 @@ try:
                     sql = "INSERT INTO Project_skill VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
-                print("Sucaaaaaaaaaaaaa")
             case 'project_env':
                 data = pd.read_csv('WorkHub/server/csv_files/project_env.csv', delimiter=',')
                 for i,row in data.iterrows():
@@ -195,7 +194,6 @@ try:
                     sql = "INSERT INTO Project_env VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
-                print("Sucaaaaaaaaaaaaa")
             case 'project_user':
                 data = pd.read_csv('WorkHub/server/csv_files/project_user.csv', delimiter=',')
                 for i,row in data.iterrows():
@@ -203,7 +201,6 @@ try:
                     sql = "INSERT INTO Project_user VALUES (%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
-                print("Sucaaaaaaaaaaaaa")
             case 'user_skill':
                 data = pd.read_csv('WorkHub/server/csv_files/user_skill.csv', delimiter=',')
                 for i,row in data.iterrows():
@@ -211,7 +208,6 @@ try:
                     sql = "INSERT INTO User_skill VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
-                print("Sucaaaaaaaaaaaaa")
 
 except mysql.connector.Error as err:
     print(f"⚠️ Error connecting to MariaDB: {err}")
@@ -219,20 +215,3 @@ finally:
     if 'mydb' in locals() and mydb.is_connected():
         mycursor.close()
         mydb.close()
-
-
-"""
-
-            case 'skill_project.csv':
-                data = pd.read_csv('server/csv_files/skill_project.csv', delimiter=',')
-                for i,row in data.iterrows():
-                    cursor = mydb.cursor()
-                    sql = "INSERT INTO Project_skill VALUES (%s,%s)"
-                    cursor.execute(sql, tuple(row))
-            case 'user_skill.csv':
-                data = pd.read_csv('server/csv_files/user_skill.csv', delimiter=',')
-                for i,row in data.iterrows():
-                    cursor = mydb.cursor()
-                    sql = "INSERT INTO User_skill (%s,%s)"
-                    cursor.execute(sql, tuple(row))
-            """
