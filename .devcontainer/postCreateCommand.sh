@@ -4,4 +4,4 @@ sudo service mariadb start
 sudo mariadb
 pip install -r .devcontainer/requirements.txt
 sudo npm install -g @angular/cli
-python3 WorkHub/Server/main.py
+python3 WorkHub/server/main.py
