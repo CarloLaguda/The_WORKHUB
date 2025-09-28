@@ -8,7 +8,7 @@
       ]
     }
   },
-  "postCreateCommand": "sudo apt update && sudo apt install mariadb-server python3 python3-pip -y && sudo service mariadb start && sudo mariadb -e \"CREATE DATABASE IF NOT EXISTS WorkHubDB; CREATE USER IF NOT EXISTS 'vscode'@'%' IDENTIFIED BY ''; GRANT ALL PRIVILEGES ON WorkHubDB.* TO 'vscode'@'%'; FLUSH PRIVILEGES;\" && pip install -r .devcontainer/requirements.txt && npm install -g @angular/cli && python3 WorkHub/server/main.py",
+  "postCreateCommand": "sudo apt update && sudo apt install mariadb-server python3 python3-pip -y && sudo service mariadb start && sudo mariadb -e \"CREATE DATABASE IF NOT EXISTS WorkHubDB; CREATE USER IF NOT EXISTS 'vscode'@'%' IDENTIFIED BY ''; GRANT ALL PRIVILEGES ON WorkHubDB.* TO 'vscode'@'%'; FLUSH PRIVILEGES;\" && pip install -r .devcontainer/requirements.txt && npm install -g @angular/cli && python3 WorkHub/Server/main.py && python3 WorkHub/Server/routes/users_route.py",
   "portsAttributes": {
     "4200": {
       "label": "Angular Dev Server",
