@@ -15,4 +15,11 @@ export class App {
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
+  selectedLang: string = 'it'; // di default Italiano
+
+  setLang(lang: string) {
+    this.selectedLang = lang;
+    console.log('Lingua selezionata:', lang);
+    // qui puoi aggiungere logica per traduzioni / i18n
+    }
 }
