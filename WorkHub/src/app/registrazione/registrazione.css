@@ -1,0 +1,19 @@
+.all{
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.immagine{
+    background-color: brown;
+    width: 50%;
+    height: 100%;
+    
+}
+.registrazione{
+    background-color: blue;
+    width: 50%;
+    height: 100%;
+}
