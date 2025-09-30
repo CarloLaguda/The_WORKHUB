@@ -1,6 +1,1 @@
-https://prod.liveshare.vsengsaas.visualstudio.com/join?F05DC5FD71DBF39CEF0862B2E0A6347CCB14
-
-
-nuovo https://prod.liveshare.vsengsaas.visualstudio.com/join?25374D6638C18F13AABFC6FF6C3894ABA7CB
-
-https://prod.liveshare.vsengsaas.visualstudio.com/join?BD1E1E2A9C0926427F671375E0788ABDB850 toci
+https://prod.liveshare.vsengsaas.visualstudio.com/join?1B08F0878269A2C6CF7C079C29B7E81E2F10
