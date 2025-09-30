@@ -31,7 +31,8 @@ try:
         title VARCHAR(100) NOT NULL,
         description VARCHAR(250) NOT NULL,
         availability VARCHAR(50) NOT NULL,
-        max_people INT NOT NULL
+        max_persone INT NOT NULL,
+        is_full BOOLEAN NOT NULL
         );
     """)
     #------------------------------------------------------------------------------------------------------
@@ -129,10 +130,9 @@ try:
     #------------------------------------------------------------------------------------------------------
     CSV_FILES = [
         'env',
+        'user',
         'project',
         'skill',
-        'user',
-
         'skill_project',
         'project_env',
         'project_user',
@@ -167,11 +167,10 @@ try:
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
             case 'project':
-                print("Ciaoo")
                 data = pd.read_csv('WorkHub/server/csv_files/project.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
-                    sql = "INSERT INTO Project VALUES (%s,%s,%s,%s,%s)"
+                    sql = "INSERT INTO Project VALUES (%s,%s,%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
             case 'skill':
