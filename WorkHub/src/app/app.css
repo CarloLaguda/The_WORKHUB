@@ -5,11 +5,13 @@
     align-items: center;
     width: 100vw;
     height: calc(100vh - 100px);
+    background-color: antiquewhite;
 }
+
 
 .center{
     height: 80%;
-    width: 65%;
+    width: 70%;
     /*border: solid black;*/
     display: flex;
     flex-direction: row;
@@ -17,14 +19,17 @@
 
 .testo{
     /*border: solid yellow;*/
-    width: 50%;
-    padding-top: 3%;
-    padding-left: 5%;
+    width: 47%;
+    margin-right: 3%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .immagine{
     /*border: solid green;*/
-    width: 50%;
+    width: 47%;
+    margin-left: 3%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,7 +38,15 @@
 p, h1, h2, h3, h4, h5, h6{
     margin: 0px;
     padding: 0px;
-    width: min-content;
+}
+
+.curva {
+    width: 100%;
+    height: 100px;
+    background-color: antiquewhite;
+    position: relative;
+    overflow: hidden;  /* Nasconde il contenuto che fuoriesce */
+    clip-path: ellipse(100% 40px at 78px 10px);
 }
 
 
@@ -41,19 +54,91 @@ p, h1, h2, h3, h4, h5, h6{
 
 
 
+.contenitore-azione {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Spazio tra bottone e link */
+}
+
+  .link-animato {
+  position: relative;
+  color: #1E56A0;
+  text-decoration: none; /* togli la sottolineatura classica */
+  font-size: 20px;
+  font-weight: 500;
+  transition: color 0.8s ease, box-shadow 0.8s ease;
+  margin-top: 20px;
+}
+
+/* Linea sottile per la sottolineatura */
+.link-animato::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px; /* spessore linea */
+  width: 0;
+  background-color: #1E56A0;
+  transition: width 0.8s ease;
+}
+
+/* Freccia */
+.link-animato::after {
+  content: " →";
+  position: absolute;
+  opacity: 0;
+  right: -10px;
+  transition: opacity 0.8s ease, right 0.8s ease;
+  color: #1E56A0;
+}
+
+.link-animato:hover {
+  box-shadow: 0 3px 60px rgba(3, 112, 255, 0.2); /* Ombra solo sotto */
+  color: #1E56A0;
+}
+
+.link-animato:hover::before {
+  width: 100%; /* sottolineatura si allunga */
+}
+
+.link-animato:hover::after {
+  opacity: 1;
+  right: -30px;
+}
 
 
 
+.btn_login {
+  background-color: #ffffff; /* Colore di sfondo */
+  color: #1E56A0; /* Colore del testo */
+  border: none; /* Rimuove il bordo */
+  width: 120px;
+  margin-top: 20px;
+  border: solid 1px #246BCE;
+  height: 30px; /* Padding per dimensionare il bottone */
+  font-size: 16px; /* Dimensione del testo */
+  border-radius: 8px; /* Angoli smussati */
+  cursor: pointer; /* Cambia il cursore per indicare che è cliccabile */
+  transition: all 0.7s ease; /* Transizione morbida per il cambio colore */
+}
 
+.btn_login:hover {
+  background-color: #1E56A0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: white; /* Colore di sfondo quando il cursore è sopra */
+}
 
-
-
-
+.linea{
+  background-color: #246BCE;
+  width: 98%;
+  height: 1px;
+  margin:0 auto;
+}
 
 .navbar {
   width: 100%;
   height: 80px;
-  border-bottom: solid 1px rgb(59, 167, 255);
+
   background-color: transparent;
   display: flex;
   justify-content: space-between; 
@@ -62,9 +147,10 @@ p, h1, h2, h3, h4, h5, h6{
 }
 
 .logo {
-  background-color: brown;
-  width: 100px;
-  height: 50px;
+  background-color: rgb(12, 188, 241);
+  width: 150px;
+  height: 70px;
+  margin-left: 5px;
   color: white;
   display: flex;
   align-items: center;
