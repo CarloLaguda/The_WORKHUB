@@ -3,3 +3,4 @@ https://prod.liveshare.vsengsaas.visualstudio.com/join?F05DC5FD71DBF39CEF0862B2E
 
 nuovo https://prod.liveshare.vsengsaas.visualstudio.com/join?25374D6638C18F13AABFC6FF6C3894ABA7CB
 
+https://prod.liveshare.vsengsaas.visualstudio.com/join?BD1E1E2A9C0926427F671375E0788ABDB850 toci
