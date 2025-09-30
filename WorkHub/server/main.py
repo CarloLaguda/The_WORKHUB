@@ -30,7 +30,8 @@ try:
         project_id INT PRIMARY KEY AUTO_INCREMENT,
         title VARCHAR(100) NOT NULL,
         description VARCHAR(250) NOT NULL,
-        availability VARCHAR(50) NOT NULL
+        availability VARCHAR(50) NOT NULL,
+        max_people INT NOT NULL
         );
     """)
     #------------------------------------------------------------------------------------------------------
@@ -61,7 +62,8 @@ try:
         password VARCHAR(255) NOT NULL,
         gender CHAR(1) NOT NULL, 
         status VARCHAR(50) NOT NULL,
-        anni_di_esperienza INT NOT NULL
+        anni_di_esperienza INT NOT NULL,
+        country VARCHAR(100) NOT NULL
         );
     """)
     #------------------------------------------------------------------------------------------------------
@@ -161,7 +163,7 @@ try:
                 data = pd.read_csv('WorkHub/server/csv_files/user.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
-                    sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                    sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
             case 'project':
@@ -169,7 +171,7 @@ try:
                 data = pd.read_csv('WorkHub/server/csv_files/project.csv', delimiter=',')
                 for i,row in data.iterrows():
                     cursor = mydb.cursor()
-                    sql = "INSERT INTO Project VALUES (%s,%s,%s,%s)"
+                    sql = "INSERT INTO Project VALUES (%s,%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
             case 'skill':
