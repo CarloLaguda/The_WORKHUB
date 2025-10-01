@@ -1,0 +1,55 @@
+<nav class="navbar">
+  <div class="logo">Logo</div>
+
+  <div class="imp" (click)="toggleMenu()" [class.active]="menuOpen">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</nav>
+
+<div class="linea"></div>
+
+<div class="side-panel" [class.open]="menuOpen">
+  <a href="#" class="animated-link">INFO</a><br><br><br>
+  <a href="#" class="animated-link">PRIVACY</a><br><br><br>
+  <a href="#" class="animated-link">PROBLEMI ?</a><br><br><br>
+  <a href="#" class="animated-link">CONTATTACI</a><br><br><br>
+  <div class="lang-switcher">
+    <span class="label">LINGUA:</span>
+
+    <button 
+      class="flag" 
+      [class.active]="selectedLang === 'it'" 
+      (click)="setLang('it')">
+      <img src="https://upload.wikimedia.org/wikipedia/en/0/03/Flag_of_Italy.svg" alt="Italiano">
+    </button>
+
+    <button 
+      class="flag" 
+      [class.active]="selectedLang === 'en'" 
+      (click)="setLang('en')">
+      <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" alt="English">
+    </button>
+  </div>
+</div>
+
+<div class="inizio">
+  <div class="center">
+    <div class="testo">
+      <h3 style="font-size: 4vw;">ENTRA A FAR PARTE DI UN TEAM </h3><br>
+      <p style="font-size: 1vw;">team di esperti che offre esperienze coinvolgenti e personalizzabili<br> per rafforzare la coesione e la collaborazione all'interno dei gruppi.<br> Che si tratti di attività pratiche in cucina, sfide informatiche stimolanti o progetti di costruzione dinamici, ogni esperienza è pensata per favorire la comunicazione, la creatività e il lavoro di squadra. Unisciti a noi per costruire legami più forti, migliorare le dinamiche di gruppo e divertiti mentre lavori insieme verso un obiettivo comune!</p>
+      <div class="contenitore-azione">
+        <button class="btn_login">LOGIN</button>
+        <a href="/signUp" class="link-animato">registrati</a>
+      </div>
+    </div>
+    <div class="immagine">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDmYj1WNCT8LXDMkPP7j-QFjxD9QxHmbgKWQ&s" width="90%" style="border-radius: 100%; aspect-ratio: 1;">
+    </div>
+  </div>
+</div>
+<svg viewBox="0 0 1920 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="rgba(255, 166, 0, 1)" d="M 0 0 C 7 0 -21 99 -14 99 L -14 99 L -14 0 L 0 0 Z" stroke-width="0"></path> <path fill="rgba(255, 166, 0, 1)" d="M -15 99 C 309.5 99 309.5 197 634 197 L 634 197 L 634 0 L -15 0 Z" stroke-width="0"></path> <path fill="rgba(255, 166, 0, 1)" d="M 633 197 C 936.5 197 936.5 61 1240 61 L 1240 61 L 1240 0 L 633 0 Z" stroke-width="0"></path><path fill="rgba(255, 166, 0, 1)" d="M 1239 61 C 1577 61 1577 107 1915 107 L 1915 107 L 1915 0 L 1239 0 Z" stroke-width="0"></path><path fill="rgba(255, 166, 0, 1)" d="M 1914 107 C 1916 107 1908 0 1910 0 L 1910 0 L 1910 0 L 2100 0 Z" stroke-width="0"></path></svg>
+<div style="height: 1000px;">
+  
+</div>

@@ -1,19 +1,41 @@
-.all{
-    background-color: white;
+.container{
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
-.immagine{
-    background-color: brown;
-    width: 50%;
-    height: 100%;
-    
+
+.center{
+    width: 40%;
+    height: 80%;
+    border: solid black 1px;
+    border-radius: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 20px;
 }
-.registrazione{
-    background-color: blue;
-    width: 50%;
-    height: 100%;
+
+.divInput{
+    width: 60%;
+}
+
+input{
+    width: 100%;
+    height: 4vh;
+    border: solid black 1px;
+    border-radius: 10px;
+}
+
+button{
+    width: 20%;
+    height: 7%;
+}
+
+p, h1, h2, h3, h4, h5, h6{
+    margin: 0px;
+    padding: 0px;
 }
