@@ -206,9 +206,6 @@ def create_project():
         return jsonify({"message": "Project successfully created"}), 201
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
-    finally:
-        mycursor.close()
-        mydb.close()
 
 # Dettagli progetto
 @app.route('/api/projects/<int:project_id>', methods=['GET'])
