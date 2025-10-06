@@ -61,9 +61,9 @@ try:
         eta INT NOT NULL,   
         password VARCHAR(255) NOT NULL,
         gender CHAR(1) NOT NULL, 
-        status VARCHAR(50) NOT NULL,
-        anni_di_esperienza INT NOT NULL,
-        country VARCHAR(100) NOT NULL
+        status VARCHAR(50),
+        anni_di_esperienza INT,
+        country VARCHAR(100)
         );
     """)
     #------------------------------------------------------------------------------------------------------

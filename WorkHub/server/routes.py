@@ -59,24 +59,38 @@ def register():
 
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
-    
-    required_fields = ['username', 'email', 'password', 'first_name', 'last_name', 'eta', 'gender', 'status', 'anni_di_esperienza', 'country']
+
+    # Campi obbligatori per la registrazione
+    required_fields = ['username', 'email', 'password', 'first_name', 'last_name', 'eta', 'gender']
 
     for field in required_fields:
         if field not in data:
             return jsonify({"message": f"Missing field: {field}"}), 400
 
+    # Hash della password
     password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+
+    # Campi opzionali — se non presenti diventano automaticamente NULL
+    status = data.get('status') or None
+    anni_di_esperienza = data.get('anni_di_esperienza') or None
+    country = data.get('country') or None
 
     try:
         mycursor.execute("""
-            INSERT INTO User (username, email, password, first_name, last_name, eta, gender, status, anni_di_esperienza, country)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (data['username'], data['email'], password_hash, data['first_name'], data['last_name'],
-              data['eta'], data['gender'], data['status'], data['anni_di_esperienza'], data['country']))
+            INSERT INTO User (
+                username, email, password, first_name, last_name, eta, gender,
+                status, anni_di_esperienza, country
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data['username'], data['email'], password_hash,
+            data['first_name'], data['last_name'],
+            data['eta'], data['gender'],
+            status, anni_di_esperienza, country
+        ))
 
         mydb.commit()
         return jsonify({"message": "User successfully registered"}), 201
+
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
 
