@@ -226,105 +226,91 @@ def create_project():
 #FILTRO PROGETTO PER DETTAGLI
 @app.route('/api/projects_details', methods=['GET'])
 def get_project_details():
-    base_select = "SELECT p.*, GROUP_CONCAT(s.skill_name SEPARATOR ', ') AS required_skills, COALESCE(pu_count.user_count, 0) AS user_count "
+    base_select = """
+        SELECT 
+            Project.project_id,
+            Project.title,
+            Project.description,
+            Project.availability,
+            Project.max_persone,
+            Project.is_full,
+            GROUP_CONCAT(Skill.skill_name SEPARATOR ', ') AS required_skills,
+            COALESCE(Project_user.user_count, 0) AS user_count
+        """
+    
     base_from_and_joins = """
-        FROM project p
-        LEFT JOIN skill_project sp ON p.project_id = sp.project_id
-        LEFT JOIN skill s ON sp.skill_id = s.skill_id
+        FROM Project
+        LEFT JOIN Project_skill ON Project.project_id = Project_skill.project_id
+        LEFT JOIN Skill ON Project_skill.skill_id = Skill.skill_id
         LEFT JOIN (
-            SELECT
+            SELECT 
                 project_id,
                 COUNT(DISTINCT user_id) AS user_count
-            FROM
-                project_user
-            GROUP BY
-                project_id
-        ) pu_count ON p.project_id = pu_count.project_id
+            FROM Project_user
+            GROUP BY project_id
+        ) AS Project_user ON Project.project_id = Project_user.project_id
     """
-    
+
+    # --- Costruzione dinamica dei filtri ---
     conditions = []
     params = []
 
-    project_id = request.args.get('project_id', type=int) #ID
-    disponibilita = request.args.get('availability', type=str) #DISPONIBILITà
-    skills = request.args.get('skills', type=str) #SKILL NAME
+    project_id = request.args.get('project_id', type=int)         # ID progetto
+    disponibilita = request.args.get('availability', type=str)    # disponibilità (open o close)
+    skills = request.args.get('skills', type=str)                 # nome skill
 
     if project_id:
-        conditions.append("p.project_id = %s")
+        conditions.append("Project.project_id = %s")
         params.append(project_id)
-        
+
     if disponibilita:
-        conditions.append("p.availability = %s") 
+        # Assicurati che la colonna "availability" esista in Project
+        conditions.append("Project.availability = %s")
         params.append(disponibilita)
-        
+
     if skills:
-        conditions.append("s.skill_name = %s")
-        params.append(skills)
+        # Usa LIKE per maggiore flessibilità di ricerca
+        conditions.append("Skill.skill_name LIKE %s")
+        params.append(f"%{skills}%")
     
-    #CONCATENAZIONE QUERY
-    query = base_select + base_from_and_joins 
+    # --- Costruzione finale della query ---
+    query = base_select + " " + base_from_and_joins
+
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
-    group_by_clause = " GROUP BY p.project_id ORDER BY p.project_id" 
-    query += group_by_clause
 
-    #SEND JSON
+    query += " GROUP BY Project.project_id ORDER BY Project.project_id"
+
+    # --- Esecuzione query ---
     try:
         if mycursor is None or not mydb.is_connected():
-            # Aggiungi un controllo di sicurezza in caso la connessione sia caduta
-             return jsonify({"error": "Database connection lost or not initialized"}), 503
+            return jsonify({"error": "Database connection lost or not initialized"}), 503
 
         mycursor.execute(query, tuple(params))
-        
-        # LOGICA DI RITORNO: Singolo oggetto vs. Lista di oggetti
+
+        # Se si cerca un progetto specifico
         if project_id and not disponibilita and not skills:
             project = mycursor.fetchone()
             if not project:
                 return jsonify({"message": "Project not found"}), 404
-            
+
             column_names = [desc[0] for desc in mycursor.description]
             project_dict = dict(zip(column_names, project))
             return jsonify(project_dict), 200
-        
+
+        # Se si cercano più progetti (filtri o tutti)
         else:
             projects = mycursor.fetchall()
-            
             if not projects:
                 return jsonify({"message": "No projects found matching criteria"}), 404
-                
+
             column_names = [desc[0] for desc in mycursor.description]
             projects_list = [dict(zip(column_names, p)) for p in projects]
             return jsonify(projects_list), 200
 
     except mysql.connector.Error as err:
-        print(f"Errore durante l'esecuzione della query get_project: {err}")
-        return jsonify({"error": "Errore nella query del database"}), 500
-    
-#UNIONE DUTENTE E PROGETTI
-@app.route('/api/projects/<int:project_id>/join', methods=['POST'])
-def join_project(project_id):
-    data = request.get_json()
-    user_id = data['user_id']
-    
-    try:
-        #CONTROLLO SE PROGETTO è GIà PEINO
-        mycursor.execute("""
-            SELECT is_full FROM Project WHERE project_id = %s
-        """, (project_id,))
-        project = mycursor.fetchone()
-        
-        if project and project[0]:
-            return jsonify({"message": "Project is full"}), 400
-        
-        mycursor.execute("""
-            INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
-            VALUES (%s, %s, %s, %s)
-        """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 0))
-
-        mydb.commit()
-        return jsonify({"message": "User successfully joined the project"}), 200
-    except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
+        print(f"Errore durante l'esecuzione della query get_project_details: {err}")
+        return jsonify({"error": "Database query error"}), 500
 
 #UPDATE USER, PER COUNTRY ANNI EXP E STATUS
 @app.route('/api/update_user', methods=['PUT'])
