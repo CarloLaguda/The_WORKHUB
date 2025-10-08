@@ -7,5 +7,6 @@ import { Login } from './login/login';
 export const routes: Routes = [
     { path: 'signUp', component: Registrazione },
     { path: 'signIn', component: Login },
-    { path: '', component: Home },
+    { path: 'home', component: Home },
+    { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

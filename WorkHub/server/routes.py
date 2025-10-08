@@ -27,31 +27,6 @@ except mysql.connector.Error as err:
 def main():
     return f"Ciao Amici io mi chiamo GIGI"
 
-@app.route("/workers_general")
-def workers():
-    if not mydb or not mycursor:
-        return jsonify({"error": "Connessione al database non stabilita"}), 500
-    try:
-        mycursor.execute('''SELECT User.first_name, User.last_name, User.eta, User.gender, User.country,
-                            User.status, User.anni_di_esperienza, GROUP_CONCAT(Skill.skill_name SEPARATOR ', ') AS skill_names_list
-                            FROM User
-                            INNER JOIN User_skill ON User.user_id = User_skill.user_id
-                            INNER JOIN Skill ON User_skill.skill_id = Skill.skill_id
-                            GROUP BY User.user_id, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza
-                            ORDER BY User.user_id;
-                            ''' )
-        myresult = mycursor.fetchall()
-        column_names = [desc[0] for desc in mycursor.description]
-        result = []
-        for row in myresult:
-            row_dict = dict(zip(column_names, row))
-            result.append(row_dict)
-        return jsonify(result)
-    except mysql.connector.Error as err:
-        print(f"Errore durante l'esecuzione della query nella route MostPole: {err}")
-        return jsonify({"error": "Errore nella query del database"}), 500
-
-
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -129,64 +104,67 @@ def login():
 
 
 # Profilo utente
-@app.route('/api/profile', methods=['GET'])
-def get_profile():
-    #user_id = request.args.get('user_id')
-    user_id = 2
-    mycursor.execute("""
-        SELECT user_id, username, email, first_name, last_name, eta, gender, status, anni_di_esperienza, country
-        FROM User WHERE user_id = %s
-    """, (user_id,))
-    
-    user = mycursor.fetchone()
-    
-    if user:
-        mycursor.close()
-        mydb.close()
-        return jsonify(dict(zip(['user_id', 'username', 'email', 'first_name', 'last_name', 'eta', 'gender', 'status', 'anni_di_esperienza', 'country'], user))), 200
-    else:
-        mycursor.close()
-        mydb.close()
-        return jsonify({"message": "User not found"}), 404
-
-# Ricerca utenti
 @app.route('/api/users', methods=['GET'])
 def search_users():
     if not mydb or not mycursor:
         return jsonify({"error": "Connessione al database non stabilita"}), 500
 
-    base_query = "SELECT User.username, User.email, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza, User.country FROM User"
+    # Colonne da selezionare
+    base_select = "SELECT User.user_id, User.username, User.email, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza, User.country, GROUP_CONCAT(Skill.skill_name) AS skills"
     
-    joins = []
+    # Integro in modo INCONDIZIONATO le join per le skill (uso LEFT JOIN, come consigliato, 
+    # per non escludere gli utenti senza skill)
+    base_from_and_joins = """
+        FROM User
+        LEFT JOIN User_skill ON User.user_id = User_skill.user_id
+        LEFT JOIN Skill ON User_skill.skill_id = Skill.skill_id
+    """
+    
     conditions = []
     params = []
 
     # Prendo i parametri dalla query string
+    user_id = request.args.get('user_id', type=int)  # 🌟 NUOVO: Ricerca per ID
+    username_or_email = request.args.get('q', type=str)
     age = request.args.get('age', type=int)
     skills = request.args.get('skills', type=str)
     country = request.args.get('country', type=str)
 
-    # Se devo filtrare per skills, aggiungo join e condizione
-    if skills:
-        joins.append("INNER JOIN User_skill ON User.user_id = User_skill.user_id")
-        joins.append("INNER JOIN Skill ON User_skill.skill_id = Skill.skill_id")
-        conditions.append("Skill.skill_name = %s")
-        params.append(skills)
-
-    # Condizioni per age e country
+    # 🌟 1. Condizione per User ID
+    if user_id:
+        conditions.append("User.user_id = %s")
+        params.append(user_id)
+        
+    # 2. Ricerca per Username o Email (testo libero)
+    if username_or_email:
+        search_term = '%' + username_or_email + '%'
+        conditions.append("(User.username LIKE %s OR User.email LIKE %s)")
+        params.extend([search_term, search_term])
+        
+    # 3. Condizione per età
     if age:
         conditions.append("User.eta >= %s")
         params.append(age)
+        
+    # 4. Condizione per Paese
     if country:
         conditions.append("User.country = %s")
         params.append(country)
 
+    # 5. Condizione per Skills
+    if skills:
+        conditions.append("Skill.skill_name = %s")
+        params.append(skills)
+
+
     # Costruisco la query completa
-    query = base_query
-    if joins:
-        query += " " + " ".join(joins)
+    query = base_select + base_from_and_joins
+    
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
+
+    # Aggiungo GROUP BY dato che uso GROUP_CONCAT per le skills
+    query += " GROUP BY User.user_id, User.username, User.email, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza, User.country"
 
     # Aggiungo ordinamento per coerenza
     query += " ORDER BY User.user_id"
@@ -197,10 +175,14 @@ def search_users():
 
         # Ottengo i nomi delle colonne per fare il dict
         column_names = [desc[0] for desc in mycursor.description]
-        # Creo lista di dict con chiave = nome colonna, valore = riga
         response = [dict(zip(column_names, row)) for row in results]
-
-        if response:
+        
+        # 🌟 RESTITUISCO UN SINGOLO OGGETTO SE CERCO PER ID, ALTRIMENTI LA LISTA
+        if user_id and response:
+            # Se è stato richiesto un singolo ID, restituisci solo il primo elemento (il profilo)
+            return jsonify(response[0]), 200
+        elif response:
+            # Se la ricerca è generica, restituisci la lista
             return jsonify(response), 200
         else:
             return jsonify({"message": "No users found"}), 404
