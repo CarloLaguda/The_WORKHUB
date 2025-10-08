@@ -203,6 +203,30 @@ def search_users():
         print(f"Errore durante l'esecuzione della query nella route search_users: {err}")
         return jsonify({"error": "Errore nella query del database"}), 500
 
+#Selezione progetto
+@app.route('/api/all_projects', methods=['GET'])
+def get_all_projects():
+    try:
+        # Esegui la query per ottenere tutti i progetti
+        mycursor.execute("SELECT * FROM Project")
+
+        # Recupera i risultati
+        projects = mycursor.fetchall()
+
+        # Ottieni i nomi delle colonne
+        column_names = [desc[0] for desc in mycursor.description]
+
+        # Crea una lista di dizionari per i risultati
+        result = [dict(zip(column_names, project)) for project in projects]
+
+        if result:
+            return jsonify(result), 200
+        else:
+            return jsonify({"message": "No projects found"}), 404
+
+    except mysql.connector.Error as err:
+        print(f"Errore durante l'esecuzione della query get_all_projects: {err}")
+        return jsonify({"error": "Errore nella query del database"}), 500
 
 
 # Creazione progetto

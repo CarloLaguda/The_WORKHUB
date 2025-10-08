@@ -1,0 +1,10 @@
+<br>
+<ul style="border-radius: 10px;">
+  <li>Nome: {{ progetto.title }}</li>
+  <li>Descrizione: {{ progetto.description }}</li>
+  <li>Disponibilità: {{ progetto.availability }}</li>
+  <li>Max persone: {{ progetto.max_persone }}</li>
+  <li>Progetto 
+    {{ progetto.is_full === 1 ? 'Pieno' : 'Ancora disponibile' }}
+  </li>
+</ul>
