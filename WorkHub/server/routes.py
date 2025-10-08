@@ -100,15 +100,21 @@ def register():
 def login():
     data = request.get_json()
 
-    if not data or 'email' not in data or 'password' not in data:
-        return jsonify({"message": "Email and password are required"}), 400
+    if not data or 'password' not in data:
+        return jsonify({"message": "Password is required"}), 400
+
+    # Prendo l'username o email da 'identifier' (puoi anche usare 'username' o 'email' ma così è più generico)
+    identifier = data.get('username') or data.get('email')
+    if not identifier:
+        return jsonify({"message": "Username or email is required"}), 400
 
     password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
 
     try:
+        # Query che cerca l'utente sia per username sia per email
         mycursor.execute("""
-            SELECT user_id, password FROM User WHERE email = %s
-        """, (data['email'],))
+            SELECT user_id, password FROM User WHERE username = %s OR email = %s
+        """, (identifier, identifier))
         
         user = mycursor.fetchone()
 
