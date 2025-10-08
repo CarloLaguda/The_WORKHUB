@@ -1,15 +1,167 @@
-.pagina{
+/* Contenitore principale della pagina */
+.pagina { 
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
+    height: 100vh;
 }
-.immagine{
+
+/* Contenitore immagine */
+.immagine {
     background-color: brown;
     width: 50%;
     height: 100vh;
 }
-.registrazione{
-    background-color: aqua;
+
+/* Sezione registrazione */
+.registrazione {
+    background-color: rgb(255, 255, 255);
     width: 50%;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: left;
+    padding: 20px;
+}
+
+/* Bottone BACK */
+.registrazione button:first-child {
+    position: absolute;
+    top: 24px;
+    right: 7px;
+    width: 70px;
+    height: 25px;
+    background-color: transparent;
+    border: 1px solid orangered;
+    border-radius: 4px;
+    color: orangered;
+    transition: all 0.6s ease;
+}
+
+.registrazione button:first-child:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: white;
+    background-color: orangered;
+}
+
+/* Link */
+.link {
+    color: orangered;
+    text-decoration: none;
+}
+
+/* Stile per gli altri input */
+.registrazione input,
+.registrazione select {
+    margin: 10px 0;
+    width: 80%;
+    max-width: 300px;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0px solid;
+    border-bottom: 1px solid rgb(122, 122, 122);
+    background-color: rgb(235, 235, 235);
+}
+
+/* Disposizione nome e cognome */
+.nome-cognome {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 300px;
+}
+
+.nome-cognome input {
+    width: 48%; /* Usa la metà della larghezza */
+}
+
+/* Disposizione data e genere */
+.data-genere {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 300px;
+}
+
+.data-genere input,
+.data-genere select {
+    width: 48%; /* Usa la metà della larghezza */
+}
+
+/* Disposizione checkbox */
+.check {
+    display: flex;
+    flex-direction: column;
+    width: 78%;
+    background-color: aqua;
+}
+
+.check1, .check2 {
+    
+}
+
+/* Distanza tra la checkbox e il testo */
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Disposizione bottoni */
+.bottoni {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px 0;
+}
+
+.bottoni {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 300px;
+    margin: 10px 0;
+}
+
+.btn1 {
+    width: 48%;
+    height: 35px;
+    margin-top: 15px;
+    background-color: orangered;
+    border: 1px solid orangered;
+    border-radius: 4px;
+    color: white;
+    transition: all 0.6s ease;
+}
+
+.btn2 {
+    width: 48%;
+    height: 35px;
+    margin-top: 15px;
+    background-color: transparent;
+    border: 0px;
+    border-bottom: 1px solid orangered;
+    color: orangered;
+    transition: all 0.6s ease;
+}
+
+.btn1:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: orangered;
+    background-color: white;
+}
+.btn2:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: white;
+    border-radius: 4px;
+    background-color: orangered;
+}
+
+.checks{
+    margin: 0px;
 }

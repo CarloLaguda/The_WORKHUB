@@ -2,32 +2,51 @@
     <div class="immagine">
         <img class="img_pagina" href="">
         <div class="onda">
-        <img src="../../immagini/wave-haikei.png">
-            </div>
+            <img src="../../immagini/wave-haikei.png">
+        </div>
     </div>
     <div class="registrazione">
-        <button routerLink="/">BACK -></button>
+        <button routerLink="/">BACK</button>
         <h1>ENTRA A FAR PARTE DEL NOSTRO GRUPPO</h1>
-        <p>Per poter accedere e poi creare i tuoi progeti personali abbiamo bisogno id alcune infoamzioni personali, tutti i tuoi dati verranno trattati con riservateza e rispetto per la <a href="#">privacy</a> </p>
+        <p>Per poter accedere e poi creare i tuoi progeti personali abbiamo bisogno id alcune infoamzioni personali, tutti i tuoi dati verranno trattati con riservateza e rispetto per la <a class="link" href="#">privacy</a>.</p>
+        
+        <!-- User info form -->
         <input placeholder="username">
-        <input placeholder="nome">
-        <input placeholder="cognome">
-        <input placeholder="eta">
+        
+        <div class="nome-cognome">
+            <input placeholder="nome">
+            <input placeholder="cognome">
+        </div>
+
         <input placeholder="mail">
-        <input placeholder="gender">
-        <input placeholder="password">
-        <input placeholder="conf_pasword"><br>
-        <input type="checkbox">ciuccio le palle<br>
-        <input type="checkbox">odio i froci<br>
-        <button>REGISTRATI</button>
-        <button>SING IN -></button>
+        
+        <div class="data-genere">
+            <input placeholder="eta" type="date">
+            <select>
+                <option value="" disabled selected>Seleziona genere</option>
+                <option value="maschio">Maschio</option>
+                <option value="femmina">Femmina</option>
+            </select>
+        </div>
+
+        <input placeholder="password" type="password">
+        <input placeholder="conf_password" type="password"><br>
+
+        <!-- Checkbox -->
+        <div class="check">
+            <div class="check1">
+                <input type="checkbox" class="checks">ciuccio le palle<br>
+            </div>
+            <div class="check2">
+                <input type="checkbox" class="checks">odio i froci<br><br>
+            </div>
+        </div>
+
+        <!-- Bottoni -->
+        <div class="bottoni">
+            <button></button>
+            <button class="btn1">REGISTER</button>
+            <button class="btn2">SING IN</button>
+        </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
