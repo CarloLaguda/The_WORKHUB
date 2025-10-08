@@ -317,6 +317,52 @@ def get_projects():
         print(f"Errore durante l'esecuzione della query get_projects: {err}")
         return jsonify({"error": "Errore nella query del database"}), 500
 
+
+#UPDATE USER
+@app.route('/api/update_user', methods=['PUT'])
+def update_user():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"message": "Missing JSON data"}), 400
+
+    # Verifica che ci sia almeno un dato da aggiornare
+    update_fields = ['status', 'anni_di_esperienza', 'country']
+    updates = []
+    params = []
+
+    for field in update_fields:
+        if field in data:
+            updates.append(f"{field} = %s")
+            params.append(data[field])
+
+    if not updates:
+        return jsonify({"message": "No fields to update"}), 400
+
+    # Aggiungi l'ID dell'utente
+    user_id = data.get('user_id')
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+
+    # Prepara la query di aggiornamento
+    query = f"UPDATE User SET {', '.join(updates)} WHERE user_id = %s"
+    params.append(user_id)
+
+    try:
+        # Esegui la query
+        mycursor.execute(query, tuple(params))
+        mydb.commit()
+
+        if mycursor.rowcount == 0:
+            return jsonify({"message": "User not found"}), 404
+
+        return jsonify({"message": "User information updated successfully"}), 200
+
+    except mysql.connector.Error as err:
+        print(f"Error updating user data: {err}")
+        return jsonify({"message": f"Error: {err}"}), 500
+
+
 if __name__ == '__main__':
     # You can change the port as needed
     app.run(debug=True, port=5000)
