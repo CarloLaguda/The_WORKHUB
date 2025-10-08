@@ -8,7 +8,7 @@
 
 /* Contenitore immagine */
 .immagine {
-    background-color: brown;
+    background-color: orangered;
     width: 50%;
     height: 100vh;
 }
@@ -25,13 +25,18 @@
     position: relative;
     text-align: left;
     padding: 20px;
+    
 }
 
-/* Bottone BACK */
+.testo{
+    max-width: 600px;
+    font-size: 18px;
+}
+
 .registrazione button:first-child {
     position: absolute;
-    top: 24px;
-    right: 7px;
+    top: 30px;
+    right: 10px;
     width: 70px;
     height: 25px;
     background-color: transparent;
@@ -59,7 +64,7 @@
 .registrazione select {
     margin: 10px 0;
     width: 80%;
-    max-width: 300px;
+    max-width: 370px;
     padding: 8px;
     box-sizing: border-box;
     border: 0px solid;
@@ -72,7 +77,7 @@
     display: flex;
     justify-content: space-between;
     width: 80%;
-    max-width: 300px;
+    max-width: 370px;
 }
 
 .nome-cognome input {
@@ -84,37 +89,72 @@
     display: flex;
     justify-content: space-between;
     width: 80%;
-    max-width: 300px;
+    max-width: 370px;
 }
 
 .data-genere input,
 .data-genere select {
     width: 48%; /* Usa la metà della larghezza */
 }
-
-/* Disposizione checkbox */
 .check {
-    display: flex;
-    flex-direction: column;
-    width: 78%;
-    background-color: aqua;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 60%;
+  max-width: 370px;
 }
 
-.check1, .check2 {
-    
+/* Label: checkbox + testo */
+.check label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
 }
 
-/* Distanza tra la checkbox e il testo */
-input[type="checkbox"] {
-    margin-right: 10px;
+/* Nascondo la checkbox reale */
+.check input.checks {
+  display: none;
 }
+
+/* Stile del quadrato personalizzato */
+.check span {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #949494;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  transition: all 0.4s;
+}
+
+/* Quando selezionata: cambia colore e mostra check */
+.check input.checks:checked + span {
+  background-color: orangered;
+  border-color: orangered;
+}
+
+.check input.checks:checked + span::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 
 /* Disposizione bottoni */
 .bottoni {
     display: flex;
     justify-content: space-between;
     width: 80%;
-    max-width: 300px;
+    max-width: 370px;
     margin: 10px 0;
 }
 
@@ -164,4 +204,11 @@ input[type="checkbox"] {
 
 .checks{
     margin: 0px;
+}
+
+.wave-container {
+  height: 200px;
+  width: 100px;
+  margin-top: 310px;    /* la blocca nella finestra */
+  margin-left: 45%;
 }
