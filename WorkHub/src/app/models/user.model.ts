@@ -1,4 +1,4 @@
-export interface User {
+export interface User { //MODELLO PER USER GENERALE
     anni_di_esperienza: number;
     country: string;
     

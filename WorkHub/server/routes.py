@@ -1,3 +1,4 @@
+#IMPORTO LIBRERIE NECESSARIE
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -10,6 +11,7 @@ CORS(app)
 mydb = None
 mycursor = None
 
+#CONNESIONE A DB
 try:
     mydb = mysql.connector.connect(
         host="localhost",
@@ -23,33 +25,28 @@ except mysql.connector.Error as err:
     print(f"⚠️ Error connecting to MariaDB: {err}")
 
 
-@app.route("/")
-def main():
-    return f"Ciao Amici io mi chiamo GIGI"
-
-
+#ROTTA PER REGISTRAZIONE UTENTI
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
-
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
-
-    # Campi obbligatori per la registrazione
+    
+    #CAMPI OBBLIGATORI PER LA REGISTRAZIONE
     required_fields = ['username', 'email', 'password', 'first_name', 'last_name', 'eta', 'gender']
-
     for field in required_fields:
         if field not in data:
             return jsonify({"message": f"Missing field: {field}"}), 400
 
-    # Hash della password
+    #CRIPTAZIONE PASSWORD
     password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
 
-    # Campi opzionali — se non presenti diventano automaticamente NULL
+    # CAMPI DI BASE NULL
     status = data.get('status') or None
     anni_di_esperienza = data.get('anni_di_esperienza') or None
     country = data.get('country') or None
 
+    #INSERT DATI
     try:
         mycursor.execute("""
             INSERT INTO User (
@@ -62,15 +59,13 @@ def register():
             data['eta'], data['gender'],
             status, anni_di_esperienza, country
         ))
-
         mydb.commit()
         return jsonify({"message": "User successfully registered"}), 201
-
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
 
 
-# Login utente
+#LOGIN UTENTE
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -78,21 +73,21 @@ def login():
     if not data or 'password' not in data:
         return jsonify({"message": "Password is required"}), 400
 
-    # Prendo l'username o email da 'identifier' (puoi anche usare 'username' o 'email' ma così è più generico)
+    #ACCESSO O CON USERNAME O CON EMAIL
     identifier = data.get('username') or data.get('email')
     if not identifier:
         return jsonify({"message": "Username or email is required"}), 400
-
+    
     password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
 
     try:
-        # Query che cerca l'utente sia per username sia per email
+        #CERCO USER O PER USERNAME O PER EMAIL
         mycursor.execute("""
             SELECT user_id, password FROM User WHERE username = %s OR email = %s
         """, (identifier, identifier))
         
         user = mycursor.fetchone()
-
+        #CONFRONTA PASSWORD
         if user and user[1] == password_hash:
             return jsonify({"message": "Login successful", "user_id": user[0]}), 200
         else:
@@ -103,72 +98,65 @@ def login():
         return jsonify({"error": "Database error"}), 500
 
 
-# Profilo utente
+#MEGA SELECT PER USER, POSSIBILE ANCHE FARE SELEZIONI COMBINATE
 @app.route('/api/users', methods=['GET'])
 def search_users():
-    if not mydb or not mycursor:
-        return jsonify({"error": "Connessione al database non stabilita"}), 500
-
-    # Colonne da selezionare
+    #SELECT DI BASE
     base_select = "SELECT User.user_id, User.username, User.email, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza, User.country, GROUP_CONCAT(Skill.skill_name) AS skills"
-    
-    # Integro in modo INCONDIZIONATO le join per le skill (uso LEFT JOIN, come consigliato, 
-    # per non escludere gli utenti senza skill)
     base_from_and_joins = """
         FROM User
         LEFT JOIN User_skill ON User.user_id = User_skill.user_id
         LEFT JOIN Skill ON User_skill.skill_id = Skill.skill_id
     """
     
+    #CONDIZIONI (WHERE, LIKE) E PARAMETRI
     conditions = []
     params = []
 
-    # Prendo i parametri dalla query string
-    user_id = request.args.get('user_id', type=int)  # 🌟 NUOVO: Ricerca per ID
-    username_or_email = request.args.get('q', type=str)
-    age = request.args.get('age', type=int)
-    skills = request.args.get('skills', type=str)
-    country = request.args.get('country', type=str)
+    #PRENDO I PARAMETRI DALLA REQUEST
+    user_id = request.args.get('user_id', type=int) #ID
+    username_or_email = request.args.get('q', type=str) ##USERNAME O EMAIL
+    age = request.args.get('age', type=int) #AGE
+    skills = request.args.get('skills', type=str) #SKILLS
+    country = request.args.get('country', type=str) #COUNTRY
 
-    # 🌟 1. Condizione per User ID
+    #USER ID
     if user_id:
         conditions.append("User.user_id = %s")
         params.append(user_id)
         
-    # 2. Ricerca per Username o Email (testo libero)
+    #USERNAME O MAIL
     if username_or_email:
         search_term = '%' + username_or_email + '%'
         conditions.append("(User.username LIKE %s OR User.email LIKE %s)")
         params.extend([search_term, search_term])
         
-    # 3. Condizione per età
+    #ETà (MAGGIORE O UGUALE)
     if age:
         conditions.append("User.eta >= %s")
         params.append(age)
         
-    # 4. Condizione per Paese
+    #PAESE DI NASCITA
     if country:
         conditions.append("User.country = %s")
         params.append(country)
 
-    # 5. Condizione per Skills
+    #NOME SKILL
     if skills:
         conditions.append("Skill.skill_name = %s")
         params.append(skills)
 
 
-    # Costruisco la query completa
+    #COSTRUZIONE QUERY
     query = base_select + base_from_and_joins
-    
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
-
-    # Aggiungo GROUP BY dato che uso GROUP_CONCAT per le skills
+    #GROUP BY
     query += " GROUP BY User.user_id, User.username, User.email, User.first_name, User.last_name, User.eta, User.gender, User.status, User.anni_di_esperienza, User.country"
-
-    # Aggiungo ordinamento per coerenza
+    #ORDINO IN BASE A USER_ID
     query += " ORDER BY User.user_id"
 
+    #FORMATTO TUTTO IN JSON E INVIA SULLA PAGINA
     try:
         mycursor.execute(query, tuple(params))
         results = mycursor.fetchall()
@@ -191,22 +179,23 @@ def search_users():
         print(f"Errore durante l'esecuzione della query nella route search_users: {err}")
         return jsonify({"error": "Errore nella query del database"}), 500
 
-#Selezione progetto
+
+#SELEZIONE PROGETTO
 @app.route('/api/all_projects', methods=['GET'])
 def get_all_projects():
     try:
-        # Esegui la query per ottenere tutti i progetti
+        #QUERY PER TUTTI I PROGETTI
         mycursor.execute("SELECT * FROM Project")
 
-        # Recupera i risultati
         projects = mycursor.fetchall()
 
-        # Ottieni i nomi delle colonne
+        #NOMI COLONNE
         column_names = [desc[0] for desc in mycursor.description]
 
-        # Crea una lista di dizionari per i risultati
+        #LISTA DIZIONARI
         result = [dict(zip(column_names, project)) for project in projects]
 
+        #MANDA I RISULTATO
         if result:
             return jsonify(result), 200
         else:
@@ -217,11 +206,12 @@ def get_all_projects():
         return jsonify({"error": "Errore nella query del database"}), 500
 
 
-# Creazione progetto
+#CREAZIONE
 @app.route('/api/projects', methods=['POST'])
 def create_project():
     data = request.get_json()
-
+    
+    #INSERT DEI VALORI
     try:
         mycursor.execute("""
             INSERT INTO Project (title, description, availability, max_persone, is_full)
@@ -233,38 +223,91 @@ def create_project():
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
 
-# Dettagli progetto
-@app.route('/api/projects/<int:project_id>', methods=['GET'])
-def get_project(project_id):
+#FILTRO PROGETTO PER DETTAGLI
+@app.route('/api/projects_details', methods=['GET'])
+def get_project_details():
+    base_select = "SELECT p.*, GROUP_CONCAT(s.skill_name SEPARATOR ', ') AS required_skills, COALESCE(pu_count.user_count, 0) AS user_count "
+    base_from_and_joins = """
+        FROM project p
+        LEFT JOIN skill_project sp ON p.project_id = sp.project_id
+        LEFT JOIN skill s ON sp.skill_id = s.skill_id
+        LEFT JOIN (
+            SELECT
+                project_id,
+                COUNT(DISTINCT user_id) AS user_count
+            FROM
+                project_user
+            GROUP BY
+                project_id
+        ) pu_count ON p.project_id = pu_count.project_id
+    """
+    
+    conditions = []
+    params = []
+
+    project_id = request.args.get('project_id', type=int) #ID
+    disponibilita = request.args.get('availability', type=str) #DISPONIBILITà
+    skills = request.args.get('skills', type=str) #SKILL NAME
+
+    if project_id:
+        conditions.append("p.project_id = %s")
+        params.append(project_id)
+        
+    if disponibilita:
+        conditions.append("p.availability = %s") 
+        params.append(disponibilita)
+        
+    if skills:
+        conditions.append("s.skill_name = %s")
+        params.append(skills)
+    
+    #CONCATENAZIONE QUERY
+    query = base_select + base_from_and_joins 
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    group_by_clause = " GROUP BY p.project_id ORDER BY p.project_id" 
+    query += group_by_clause
+
+    #SEND JSON
     try:
-        mycursor.execute("""
-            SELECT * FROM Project WHERE project_id = %s
-        """, (project_id,))
+        if mycursor is None or not mydb.is_connected():
+            # Aggiungi un controllo di sicurezza in caso la connessione sia caduta
+             return jsonify({"error": "Database connection lost or not initialized"}), 503
+
+        mycursor.execute(query, tuple(params))
         
-        project = mycursor.fetchone()
-        
-        if project:
-            # Ottengo i nomi delle colonne dal cursore
+        # LOGICA DI RITORNO: Singolo oggetto vs. Lista di oggetti
+        if project_id and not disponibilita and not skills:
+            project = mycursor.fetchone()
+            if not project:
+                return jsonify({"message": "Project not found"}), 404
+            
             column_names = [desc[0] for desc in mycursor.description]
-            # Creo il dict
             project_dict = dict(zip(column_names, project))
             return jsonify(project_dict), 200
+        
         else:
-            return jsonify({"message": "Project not found"}), 404
+            projects = mycursor.fetchall()
+            
+            if not projects:
+                return jsonify({"message": "No projects found matching criteria"}), 404
+                
+            column_names = [desc[0] for desc in mycursor.description]
+            projects_list = [dict(zip(column_names, p)) for p in projects]
+            return jsonify(projects_list), 200
 
     except mysql.connector.Error as err:
         print(f"Errore durante l'esecuzione della query get_project: {err}")
         return jsonify({"error": "Errore nella query del database"}), 500
-
-       
-# Unire un utente a un progetto
+    
+#UNIONE DUTENTE E PROGETTI
 @app.route('/api/projects/<int:project_id>/join', methods=['POST'])
 def join_project(project_id):
     data = request.get_json()
     user_id = data['user_id']
     
     try:
-        # Controlla se il progetto è già pieno
+        #CONTROLLO SE PROGETTO è GIà PEINO
         mycursor.execute("""
             SELECT is_full FROM Project WHERE project_id = %s
         """, (project_id,))
@@ -283,54 +326,7 @@ def join_project(project_id):
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
 
-# Ricerca progetti
-@app.route('/api/projects', methods=['GET'])
-def get_projects():
-    try:
-        # Parametri di filtro (opzionali)
-        availability = request.args.get('availability')
-        is_full = request.args.get('is_full')
-        max_persone = request.args.get('max_persone', type=int)  # esempio di filtro numerico
-
-        # Base query e parametri
-        query = "SELECT * FROM Project WHERE 1=1"
-        params = []
-
-        # Filtri dinamici
-        if availability:
-            query += " AND availability = %s"
-            params.append(availability)
-        if is_full:
-            query += " AND is_full = %s"
-            params.append(is_full)
-        if max_persone is not None:
-            query += " AND max_persone <= %s"
-            params.append(max_persone)
-
-        # Ordino per project_id
-        query += " ORDER BY project_id"
-
-        # Eseguo la query
-        mycursor.execute(query, tuple(params))
-        projects = mycursor.fetchall()
-
-        # Prendo nomi colonne dinamicamente
-        column_names = [desc[0] for desc in mycursor.description]
-
-        # Creo lista di dict
-        results = [dict(zip(column_names, project)) for project in projects]
-
-        if results:
-            return jsonify(results), 200
-        else:
-            return jsonify({"message": "No projects found"}), 404
-
-    except mysql.connector.Error as err:
-        print(f"Errore durante l'esecuzione della query get_projects: {err}")
-        return jsonify({"error": "Errore nella query del database"}), 500
-
-
-#UPDATE USER
+#UPDATE USER, PER COUNTRY ANNI EXP E STATUS
 @app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
@@ -338,7 +334,7 @@ def update_user():
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
 
-    # Verifica che ci sia almeno un dato da aggiornare
+    #ALMENO UN DATO DA AGGIORNARE
     update_fields = ['status', 'anni_di_esperienza', 'country']
     updates = []
     params = []
@@ -351,17 +347,17 @@ def update_user():
     if not updates:
         return jsonify({"message": "No fields to update"}), 400
 
-    # Aggiungi l'ID dell'utente
+    #AGGIUNGI ID UTENTE
     user_id = data.get('user_id')
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
 
-    # Prepara la query di aggiornamento
+    #QUERY
     query = f"UPDATE User SET {', '.join(updates)} WHERE user_id = %s"
     params.append(user_id)
 
     try:
-        # Esegui la query
+        #ESEGUE QUERY
         mycursor.execute(query, tuple(params))
         mydb.commit()
 
