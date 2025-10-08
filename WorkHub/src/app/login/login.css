@@ -1,0 +1,89 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 25px);
+}
+
+.login{
+    flex-grow: 6;
+    /*background-color: green;*/
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.privacy{
+    flex-grow: 3;
+    background-color: brown;
+}
+
+.center{
+    /*background-color: blue;*/
+    height: 75%;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 8;
+    width: 100%;
+}
+
+.btns{
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+    height: 30px;
+}
+
+h1{
+    font-size: 100px;
+    flex-grow: 1;
+}
+
+h1, p{
+    margin: 0px;
+    padding: 0px;
+}
+
+input{
+    width: 60%;
+    height: 30px;
+    border: 0px;
+    border-bottom: solid black 1px;
+    background-color: rgb(235, 235, 235);
+    padding-left: 10px;
+    transition-duration: 0.4s;
+}
+
+input:hover{
+    transition-duration: 0.4s;
+    background-color: rgb(207, 207, 207);
+}
+
+.formBtn{
+    flex-grow: 1;
+    margin-right: 2px;
+    margin-left: 2px;
+    background-color: transparent;
+    border: solid orangered 0.5px;
+    border-radius: 2px;
+    color: orangered;
+    height: 40px;
+    font-weight: bold;
+    font-size: 13px;
+    transition-duration: 0.4s;
+}
+
+.formBtn:hover{
+    transition-duration: 0.4s;
+    background-color: orangered;
+    color: white;
+}
