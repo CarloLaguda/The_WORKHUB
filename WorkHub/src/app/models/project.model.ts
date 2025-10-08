@@ -1,4 +1,4 @@
-export class Project {
+export class Project { // MODELLO PER IL PROGETTO BASE, DA AGGIUNGERE DETTAGLI
   constructor(
     public availability: string,
     public description: string,

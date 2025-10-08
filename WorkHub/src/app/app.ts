@@ -16,60 +16,55 @@ import { User } from './models/user.model';
   styleUrl: './app.css'
 })
 export class App {
-  loading!: boolean
-  obs!: Observable<Project[]>
-  obs_login!: Observable<Login>
-  obs_user!: Observable<User[]>
-  users!: User[]
-  current_user_obs!: Observable<User>
-  current_user_Object!: User
-  url: string = "https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/"
-  project_all: Project[] = []
- 
-  constructor(public http: HttpClient, public router: Router){}
+  loading!: boolean //VARIABILE PER LE CHIAMTAE
+  obs_projects!: Observable<Project[]> //OBSERVABLE PER PROGETTI
+  project_all: Project[] = [] // TUTTI I PROGETTI
 
-  errore: string = ""
- 
+  obs_login!: Observable<Login> // OBSERVABLE PER LA LOGIN
 
-  login(username: string, password: string) {
+  obs_user!: Observable<User[]> // OBSERVALE PER USER (TUTTI)
+  users!: User[] //VETTORE USERS
+
+  current_user_obs!: Observable<User> // OBSERVALE PER USER REGISTRATO
+  current_user_Object!: User //CURRENT USER
+  
+   errore: string = ""
+  
+  url: string = "https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  
+ 
+  constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR
+
+  login(username: string, password: string) { //LOGIN CON DATI REGISTRATI
     this.loading = true;
     this.errore = '';
-    // creo il corpo della richiesta
     const body = { 
       "username":username, 
       "password": password };
 
-    // salvo l'osservabile come fai tu con getAllProject
     this.obs_login = this.http.post<Login>('https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/api/login', body);
 
-    // sottoscrizione con callback separata
     this.obs_login.subscribe(this.handleLoginResponse);
   }
 
   handleLoginResponse = (res: any) => {
     this.loading = false;
-    // supponiamo che il backend risponda con { success: true, token: "..."}
-    if (res && res.user_id) {
+    if (res && res.user_id) {//SE CI RESTITUISCE L'ID DELLO USER ABBIAMO FATTO LA LOGIN !!!
       console.log("aaaaaaaaaa")
       localStorage.setItem('token', res.token);
       console.log('Login effettuato con successo ✅');
-      // redirect alla home
-      // ATTENZIONE: serve il Router nel costruttore
-      this.getUser_Main(res.user_id)
-      this.router.navigate(['/home']);
+      this.getUser_Main(res.user_id) // PRENDO I DATI SOLO DELLO USER REGISTRATO
+      this.router.navigate(['/home']); // VADO ALLA HOME
       //
     } else {
       this.errore = 'Credenziali non valide';
     }
   };
 
-  getUser_Main(id: number){
+  getUser_Main(id: number){ //PRENDO USER REGISTRATO
     this.loading = true;
     this.errore = '';
-    // salvo l'osservabile come fai tu con getAllProject
     this.current_user_obs = this.http.get<User>('https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/api/users?user_id='+ id);
-
-    // sottoscrizione con callback separata
     this.current_user_obs.subscribe(this.getUser_Main_data);
   }
 
@@ -85,12 +80,11 @@ export class App {
     }
   }
 
-  
-  getAllProject()
+  getAllProject()// PRENDO TUTTI I PROGETTI
   {
     this.loading = true
-    this.obs = this.http.get<Project[]>(this.url)
-    this.obs.subscribe(this.getData_Project)
+    this.obs_projects = this.http.get<Project[]>(this.url)
+    this.obs_projects.subscribe(this.getData_Project)
   }
 
   getData_Project = (d: Project[]) =>
@@ -106,6 +100,6 @@ export class App {
   }
 
   ngOnInit(){
-    //this.getAllProject()
+    this.getAllProject()
   }
 }
