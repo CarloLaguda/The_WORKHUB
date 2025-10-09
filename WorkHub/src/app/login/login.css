@@ -4,12 +4,13 @@
 }/* Struttura principale */
 
 
+
+
 .container {
   display: flex;
-  flex-direction: column; /* impila in verticale */
-  height: 100vh;
+  flex-direction: column;
+  height: 100%;
 }
-
 /* Sezione sopra: logo e login affiancati */
 .top-section {
   display: flex;
@@ -31,6 +32,16 @@
   align-items: center;
 }
 
+.link {
+    color: orangered;
+    text-decoration: none;
+}
+
+.imma{
+  width: 60%;
+  margin-right: -150px;
+}
+
 /* Login */
 .login {
   width: 50%;
@@ -44,7 +55,7 @@
 .privacy {
   width: 100%;
   margin-top: 100px;
-  height: 400px;
+  height: 200px;
   background-color: orangered;
 }
 

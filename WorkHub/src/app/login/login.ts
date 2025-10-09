@@ -17,4 +17,11 @@ export class Login {
       console.log("Ciao")
       this.chiamata.login(username.value, password.value)
     }
+    ngOnInit() {
+  document.body.style.overflow = 'hidden';
+}
+
+  ngOnDestroy() {
+    document.body.style.overflow = 'auto';
+  }
 }
