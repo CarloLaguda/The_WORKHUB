@@ -30,26 +30,26 @@
         Tutte le informazioni saranno trattate con la massima riservatezza, in conformità con le normative vigenti e nel pieno rispetto della nostra <a class="link" href="#">privacy</a>.
         </p><br>
         </div>
-        <input placeholder="username">
+        <input placeholder="username" #username>
         
         <div class="nome-cognome">
-            <input placeholder="nome">
-            <input placeholder="cognome">
+            <input placeholder="nome" #nome>
+            <input placeholder="cognome" #cognome>
         </div>
 
-        <input placeholder="mail">
+        <input placeholder="mail" #email>
         
         <div class="data-genere">
-            <input placeholder="eta" type="date">
-            <select>
+            <input placeholder="eta" type="date" #eta>
+            <select #gender>
                 <option value="" disabled selected>Seleziona genere</option>
                 <option value="maschio">Maschio</option>
                 <option value="femmina">Femmina</option>
             </select>
         </div>
 
-        <input placeholder="password" type="password">
-        <input placeholder="conf_password" type="password"><br>
+        <input placeholder="password" type="password" #password>
+        <input placeholder="conf_password" type="password" #conf_pass><br>
 
         <div class="check">
             <label>
@@ -65,7 +65,7 @@
         </div>
         <div class="bottoni">
             <button routerLink="/">BACK</button>
-            <button class="btn1">REGISTER</button>
+            <button class="btn1" (click)="register_start(username, email, password, conf_pass, nome, cognome, eta, gender)">REGISTER</button>
             <button class="btn2" routerLink="/signIn">SING IN</button>
         </div>
     </div>

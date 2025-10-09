@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Login } from './models/login.model';
 import { User } from './models/user.model';
+import { Register } from './models/register.model';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,8 @@ export class App {
   project_all: Project[] = [] // TUTTI I PROGETTI
 
   obs_login!: Observable<Login> // OBSERVABLE PER LA LOGIN
+
+  obs_register!: Observable<Register>
 
   obs_user!: Observable<User[]> // OBSERVALE PER USER (TUTTI)
   users!: User[] //VETTORE USERS
@@ -42,7 +45,7 @@ export class App {
       "username":username, 
       "password": password };
 
-    this.obs_login = this.http.post<Login>('https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/api/login', body);
+    this.obs_login = this.http.post<Login>('https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/login', body);
 
     this.obs_login.subscribe(this.handleLoginResponse);
   }
@@ -61,10 +64,31 @@ export class App {
     }
   };
 
+  register(username: string, email: string, password: string, nome: string, cognome: string, eta: number, gender: string){
+    let reg_data = {
+      "username": username,
+      "email": email,
+      "password": password,
+      "first_name": nome,
+      "last_name": cognome,
+      "eta": eta,
+      "gender": gender,
+    }
+
+    console.log(reg_data)
+
+    this.obs_register = this.http.post<Register>("https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/register", reg_data)
+    this.obs_register.subscribe(this.handleRegisterResponse)
+  }
+
+  handleRegisterResponse = (response: any) => {
+    console.log(response)
+  }
+
   getUser_Main(id: number){ //PRENDO USER REGISTRATO
     this.loading = true;
     this.errore = '';
-    this.current_user_obs = this.http.get<User>('https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/api/users?user_id='+ id);
+    this.current_user_obs = this.http.get<User>('https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/users?user_id='+ id);
     this.current_user_obs.subscribe(this.getUser_Main_data);
   }
 
