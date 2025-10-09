@@ -1,4 +1,9 @@
 /* Contenitore principale della pagina */
+* {
+    font-family: Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
 .pagina { 
     display: flex;
     justify-content: center;
@@ -46,6 +51,13 @@
     transition: all 0.6s ease;
 }
 
+.highlight {
+    background: linear-gradient(90deg, orangered, rgb(170, 111, 0));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
 .registrazione button:first-child:hover {
     transform: translateY(-1px);
     box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
@@ -70,7 +82,19 @@
     border: 0px solid;
     border-bottom: 1px solid rgb(122, 122, 122);
     background-color: rgb(235, 235, 235);
+    transition: all 0.2s ease;
 }
+
+
+.registrazione input:focus,
+.registrazione select:focus {
+    outline: none; /* Rimuove il contorno blu predefinito */
+    border-bottom: 1px solid orangered; /* Colore evidenziato */
+    background-color: white; /* Cambia leggermente lo sfondo */
+    box-shadow: 0 3px 5px rgba(255, 69, 0, 0.2); /* Effetto glow */
+    transition: all 0.6s ease;
+}
+
 
 /* Disposizione nome e cognome */
 .nome-cognome {
@@ -188,7 +212,29 @@
     transition: all 0.6s ease;
 }
 
+.btn3 {
+    width: 25px;
+    height: 25px;
+    background-color: orangered;
+    border: 1px solid orangered;
+    border-radius: 4px;
+    color: white;
+    transition: all 0.6s ease;
+
+    /* 👇 Fissaggio in alto a destra */
+    position: fixed;
+    top: 10px;     /* distanza dal bordo superiore */
+    right: 85px;   /* distanza dal bordo destro */
+    z-index: 1000; /* per stare sopra gli altri elementi */
+}
+
 .btn1:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: orangered;
+    background-color: white;
+}
+.btn3:hover {
     transform: translateY(-1px);
     box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
     color: orangered;
