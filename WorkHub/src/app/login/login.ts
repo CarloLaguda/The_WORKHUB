@@ -14,8 +14,11 @@ export class Login {
     constructor(private chiamata: App) {}
     //Metodo locale per fare la chiamata http nell'app component
     login_start(username :HTMLInputElement, password: HTMLInputElement){
-      console.log("Ciao")
-      this.chiamata.login(username.value, password.value)
+      if(username.value == "" || password.value == ""){
+        console.log("username/email o password mancanti")
+      }else{
+        this.chiamata.login(username.value, password.value)
+      }
     }
     ngOnInit() {
   document.body.style.overflow = 'hidden';

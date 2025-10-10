@@ -33,7 +33,7 @@ export class App {
   
    errore: string = ""
   
-  url: string = "https://expert-sniffle-699jjrw6qg4v34wr7-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  url: string = "https://improved-telegram-q77ww96r5rp424rj-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
   
  
   constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR
@@ -53,7 +53,6 @@ export class App {
   handleLoginResponse = (res: any) => {
     this.loading = false;
     if (res && res.user_id) {//SE CI RESTITUISCE L'ID DELLO USER ABBIAMO FATTO LA LOGIN !!!
-      console.log("aaaaaaaaaa")
       localStorage.setItem('token', res.token);
       console.log('Login effettuato con successo ✅');
       this.getUser_Main(res.user_id) // PRENDO I DATI SOLO DELLO USER REGISTRATO
