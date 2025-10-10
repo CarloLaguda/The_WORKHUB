@@ -33,7 +33,7 @@ export class App {
   
    errore: string = ""
   
-  url: string = "https://ideal-space-xylophone-q7664x7rjp72xp-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  url: string = "https://expert-sniffle-699jjrw6qg4v34wr7-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
   
  
   constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR
@@ -45,7 +45,7 @@ export class App {
       "username":username, 
       "password": password };
 
-    this.obs_login = this.http.post<Login>('https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/login', body);
+    this.obs_login = this.http.post<Login>(`${this.url}api/login`, body);
 
     this.obs_login.subscribe(this.handleLoginResponse);
   }
@@ -77,7 +77,7 @@ export class App {
 
     console.log(reg_data)
 
-    this.obs_register = this.http.post<Register>("https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/register", reg_data)
+    this.obs_register = this.http.post<Register>(`${this.url}api/register`, reg_data)
     this.obs_register.subscribe(this.handleRegisterResponse)
   }
 
@@ -88,7 +88,7 @@ export class App {
   getUser_Main(id: number){ //PRENDO USER REGISTRATO
     this.loading = true;
     this.errore = '';
-    this.current_user_obs = this.http.get<User>('https://urban-rotary-phone-699jjrw6qrgwc5667-5000.app.github.dev/api/users?user_id='+ id);
+    this.current_user_obs = this.http.get<User>(`${this.url}api/users?user_id=`+ id);
     this.current_user_obs.subscribe(this.getUser_Main_data);
   }
 
