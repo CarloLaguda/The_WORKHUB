@@ -219,3 +219,30 @@ select:focus {
   overflow: hidden;
     margin-top: -200px;
 }
+
+
+
+.password-container {
+  position: relative;
+  width: 80%;
+  max-width: 370px;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px; /* spazio per l’occhio */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: rgb(201, 201, 201);
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: orangered;
+}

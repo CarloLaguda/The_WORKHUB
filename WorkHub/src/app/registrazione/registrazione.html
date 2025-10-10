@@ -1,4 +1,6 @@
-<div class="pagina"><!--https://uisurgeon.com/tools/css-wave-generator-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="pagina" (keydown)="onKeydown($event)"><!--https://uisurgeon.com/tools/css-wave-generator-->
     <div class="immagine">
         <img class="img_pagina" src="/workspaces/The_WORKHUB/WorkHub/public/arancione.png">
         <div class="wave-container">
@@ -40,7 +42,10 @@
         <input placeholder="mail" #email>
         
         <div class="data-genere">
-            <input placeholder="eta" type="date" #eta>
+            <div class="date-container">
+            <input type="date" id="eta" #eta required>
+            <label for="dataNascita" [class.filled]="dataNascita">Data di nascita</label>
+            </div>
             <select #gender>
                 <option value="" disabled selected>Seleziona genere</option>
                 <option value="maschio">Maschio</option>
@@ -48,9 +53,33 @@
             </select>
         </div>
 
-        <input placeholder="password" type="password" #password>
-        <input placeholder="conf_password" type="password" #conf_pass><br>
+        <div class="password-container">
+            <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                placeholder="password" 
+                #password>
+            
+            <span class="toggle-password" (click)="togglePassword()">
+                <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+            </span>
+        </div>
+        <div class="password-container">
+    <input 
+        [type]="showPassword1 ? 'text' : 'password'" 
+        placeholder="Conferma password" 
+        #conf_pass>
+    
+        <span class="toggle-password" (click)="togglePassword1()">
+            <i [class]="showPassword1 ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+        </span>
+    </div>
 
+    <!-- ⚠️ Avviso se le password non coincidono -->
+    <p *ngIf="passwordError" class="password-error">
+    ⚠️ Le password non coincidono
+    </p>
+
+        <br>
         <div class="check">
             <label>
                 <input type="checkbox" class="checks">

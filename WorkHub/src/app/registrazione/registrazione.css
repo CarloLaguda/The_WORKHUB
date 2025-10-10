@@ -258,3 +258,87 @@
   margin-top: 310px;    /* la blocca nella finestra */
   margin-left: 45%;
 }
+
+.password-container {
+  position: relative;
+  width: 80%;
+  max-width: 370px;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px; /* spazio per l’occhio */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: rgb(201, 201, 201);
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: orangered;
+}
+.errore-password {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: left;
+  width: 80%;
+  max-width: 370px;
+}
+
+
+.date-container {
+  position: relative;
+  width: 48%;
+  max-width: 370px;
+}
+
+.date-container input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 13px;
+  color: #000000;
+  background-color: rgb(235, 235, 235);
+  border: none;
+  border-bottom: 1px solid rgb(122, 122, 122);
+}
+
+.date-container label {
+  position: absolute;
+  top: 11px;
+  left: 10px;
+  color: rgb(122, 122, 122);
+  font-size: 11px;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+/* Effetto “placeholder scomparso” quando l’utente seleziona una data */
+.date-container input:focus + label,
+.date-container label.filled {
+  top: -5px;
+  font-size: 11px;
+  color: transparent;
+  background-color: transparent;
+  padding: 0 4px;
+}
+
+.password-error {
+  color: rgb(255, 60, 60);
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: left;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -27,4 +27,9 @@ export class Login {
   ngOnDestroy() {
     document.body.style.overflow = 'auto';
   }
+  showPassword: boolean = false;
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 }

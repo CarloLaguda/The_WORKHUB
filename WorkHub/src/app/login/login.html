@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <div class="container">
   <div class="top-section">
     <div class="logo">
@@ -12,7 +13,16 @@
         </p>
         <div class="form">
           <input placeholder="username / mail" #creddenziale>
-          <input type="password" placeholder="password" #password>
+          <div class="password-container">
+  <input 
+    [type]="showPassword ? 'text' : 'password'" 
+    placeholder="password" 
+    #password>
+  
+  <span class="toggle-password" (click)="togglePassword()">
+    <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+  </span>
+</div>
           <div class="btns">
             <button class="formBtn1" (click)="login_start(creddenziale, password)">ACCEDI</button>
             <button routerLink="/signUp" class="formBtn2">REGISTRATI</button>

@@ -1,59 +1,79 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { App } from '../app';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-registrazione',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule, FormsModule],
   templateUrl: './registrazione.html',
   styleUrls: ['./registrazione.css']
 })
-export class Registrazione {
+export class Registrazione implements OnInit, OnDestroy {
 
-  dataNascita!: Date
+  @ViewChild('registerBtn') registerBtn!: ElementRef<HTMLButtonElement>;
 
-  constructor(private app: App){}
+  dataNascita!: Date;
+  showPassword: boolean = false;
+  showPassword1: boolean = false;
+  passwordError: boolean = false;
 
-  register_start(username: HTMLInputElement, email: HTMLInputElement, password: HTMLInputElement, conf_pass: HTMLInputElement, nome: HTMLInputElement, cognome: HTMLInputElement, eta: HTMLInputElement, gender: HTMLSelectElement){
+  constructor(private app: App) {}
 
-    if(username.value == "" || email.value == "" || password.value == "" || conf_pass.value == "" || nome.value == "" || cognome.value == "" || eta.value == "" || gender.value == ""){
-      console.log("Devi compilare tutti i campi")
-    }else{
-      if(password.value == conf_pass.value){
-        let oggi = new Date()
-        this.dataNascita = new Date(eta.value)
+  togglePassword() { this.showPassword = !this.showPassword; }
+  togglePassword1() { this.showPassword1 = !this.showPassword1; }
 
-        let etaVera = oggi.getFullYear() - this.dataNascita.getFullYear()
-        let calcMese = oggi.getMonth() - this.dataNascita.getMonth()
-        let calcGiorno = oggi.getDay() - this.dataNascita.getDay()
+  register_start(
+    username: HTMLInputElement,
+    email: HTMLInputElement,
+    password: HTMLInputElement,
+    conf_pass: HTMLInputElement,
+    nome: HTMLInputElement,
+    cognome: HTMLInputElement,
+    dataNascitaInput: HTMLInputElement,
+    gender: HTMLSelectElement
+  ) {
+    if (!username.value || !email.value || !password.value || !conf_pass.value ||
+        !nome.value || !cognome.value || !dataNascitaInput.value || !gender.value) {
+      console.log("Devi compilare tutti i campi");
+      return;
+    }
 
-        if(calcMese < 0 || (calcMese == 0 && calcGiorno < 0)){
-          etaVera -= 1
-        }
+    if (password.value !== conf_pass.value) {
+      this.passwordError = true;
+      console.log("Le password non sono uguali");
+      return;
+    } else {
+      this.passwordError = false;
+    }
 
-        let genderVero: string = ""
-        if(gender.value == "maschio"){
-          genderVero = "M"
-        }else if(gender.value == "femmina"){
-          genderVero = "F"
-        }
+    this.dataNascita = new Date(dataNascitaInput.value);
+    const oggi = new Date();
+    let etaVera = oggi.getFullYear() - this.dataNascita.getFullYear();
+    const calcMese = oggi.getMonth() - this.dataNascita.getMonth();
+    const calcGiorno = oggi.getDate() - this.dataNascita.getDate();
+    if (calcMese < 0 || (calcMese === 0 && calcGiorno < 0)) etaVera--;
 
-        this.app.register(username.value, email.value, password.value, nome.value, cognome.value, etaVera, genderVero)
+    let genderVero = gender.value.toLowerCase() === "maschio" ? "M" : "F";
 
-      }else{
-        console.log("Le password non sono uguali")
-      }
+    this.app.register(
+      username.value, email.value, password.value,
+      nome.value, cognome.value, etaVera, genderVero
+    );
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.registerBtn.nativeElement.click();
     }
   }
 
- ngOnInit(): void {
-    // Blocca lo scroll
+  ngOnInit(): void {
     document.body.style.overflow = 'hidden';
   }
 
   ngOnDestroy(): void {
-    // Ripristina lo scroll quando esci dal componente
     document.body.style.overflow = 'auto';
   }
 }
