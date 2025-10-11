@@ -234,44 +234,56 @@ def get_project_details():
             Project.availability,
             Project.max_persone,
             Project.is_full,
-            GROUP_CONCAT(Skill.skill_name SEPARATOR ', ') AS required_skills,
-            COALESCE(Project_user.user_count, 0) AS user_count
+            CONCAT(User.first_name, ' ', User.last_name) AS creator_name,
+            GROUP_CONCAT(DISTINCT Skill.skill_name SEPARATOR ', ') AS required_skills,
+            COALESCE(Project_user_count.user_count, 0) AS user_count
         """
     
     base_from_and_joins = """
         FROM Project
-        LEFT JOIN Project_skill ON Project.project_id = Project_skill.project_id
-        LEFT JOIN Skill ON Project_skill.skill_id = Skill.skill_id
+        LEFT JOIN Project_skill 
+            ON Project.project_id = Project_skill.project_id
+        LEFT JOIN Skill 
+            ON Project_skill.skill_id = Skill.skill_id
         LEFT JOIN (
             SELECT 
                 project_id,
                 COUNT(DISTINCT user_id) AS user_count
             FROM Project_user
             GROUP BY project_id
-        ) AS Project_user ON Project.project_id = Project_user.project_id
+        ) AS Project_user_count 
+            ON Project.project_id = Project_user_count.project_id
+        LEFT JOIN Project_user AS Creator_link 
+            ON Project.project_id = Creator_link.project_id AND Creator_link.is_creator = 1
+        LEFT JOIN User 
+            ON Creator_link.user_id = User.user_id
     """
 
     # --- Costruzione dinamica dei filtri ---
     conditions = []
     params = []
 
-    project_id = request.args.get('project_id', type=int)         # ID progetto
-    disponibilita = request.args.get('availability', type=str)    # disponibilità (open o close)
-    skills = request.args.get('skills', type=str)                 # nome skill
+    project_id = request.args.get('project_id', type=int)
+    disponibilita = request.args.get('availability', type=str)
+    skills = request.args.get('skills', type=str)
+    creator_name = request.args.get('creator_name', type=str)
 
     if project_id:
         conditions.append("Project.project_id = %s")
         params.append(project_id)
 
     if disponibilita:
-        # Assicurati che la colonna "availability" esista in Project
         conditions.append("Project.availability = %s")
         params.append(disponibilita)
 
     if skills:
-        # Usa LIKE per maggiore flessibilità di ricerca
         conditions.append("Skill.skill_name LIKE %s")
         params.append(f"%{skills}%")
+
+    if creator_name:
+        # Ricerca su nome e cognome concatenati
+        conditions.append("CONCAT(User.first_name, ' ', User.last_name) LIKE %s")
+        params.append(f"%{creator_name}%")
     
     # --- Costruzione finale della query ---
     query = base_select + " " + base_from_and_joins
@@ -288,8 +300,7 @@ def get_project_details():
 
         mycursor.execute(query, tuple(params))
 
-        # Se si cerca un progetto specifico
-        if project_id and not disponibilita and not skills:
+        if project_id and not disponibilita and not skills and not creator_name:
             project = mycursor.fetchone()
             if not project:
                 return jsonify({"message": "Project not found"}), 404
@@ -298,7 +309,6 @@ def get_project_details():
             project_dict = dict(zip(column_names, project))
             return jsonify(project_dict), 200
 
-        # Se si cercano più progetti (filtri o tutti)
         else:
             projects = mycursor.fetchall()
             if not projects:

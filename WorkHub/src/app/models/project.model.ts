@@ -1,10 +1,13 @@
-export class Project { // MODELLO PER IL PROGETTO BASE, DA AGGIUNGERE DETTAGLI
+export class Project {
   constructor(
-    public availability: string,
+    public project_id: number,
+    public title: string,
     public description: string,
-    public project_id: string,
-    public is_full: number,
+    public availability: string,
     public max_persone: number,
-    public title: string
+    public is_full: number,
+    public creator_name: string,
+    public required_skills: string,
+    public user_count: number
   ) {}
 }
