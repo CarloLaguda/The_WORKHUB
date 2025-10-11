@@ -1,7 +1,6 @@
 import { RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
-import { Prova } from './prova/prova';
 import { HttpClient } from '@angular/common/http';
 import { Project } from './models/project.model';
 import { Observable } from 'rxjs';
@@ -12,7 +11,7 @@ import { Register } from './models/register.model';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, Prova],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -33,7 +32,7 @@ export class App {
   
    errore: string = ""
   
-  url: string = "https://improved-telegram-q77ww96r5rp424rj-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  url: string = "https://opulent-xylophone-pjjxxg99jr9wf7vvr-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
   
  
   constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR
@@ -105,8 +104,9 @@ export class App {
 
   getAllProject()// PRENDO TUTTI I PROGETTI
   {
+    this.project_all = []
     this.loading = true
-    this.obs_projects = this.http.get<Project[]>(this.url)
+    this.obs_projects = this.http.get<Project[]>(this.url+"api/project_details")
     this.obs_projects.subscribe(this.getData_Project)
   }
 
@@ -114,7 +114,7 @@ export class App {
   {
     this.project_all = d
     if (this.project_all.length === 0){
-      this.errore = "Nessun pilota trovato :/"
+      this.errore = "Nessun progetto trovato :/"
     }
     else{
       console.log(this.project_all)
@@ -122,7 +122,25 @@ export class App {
     }
   }
 
+  getAllUsers(){
+    this.users = []
+    this.loading = true
+    this.obs_user = this.http.get<User[]>(this.url+"api/users")
+    this.obs_user.subscribe(this.getData_Users)
+  }
+  getData_Users = (d: User[]) => {
+    this.users= d
+    if (this.users.length === 0){
+      this.errore = "Nessun progetto trovato :/"
+    }
+    else{
+      console.log(this.users)
+      this.loading = false
+    }
+  }
+
   ngOnInit(){
     this.getAllProject()
+    this.getAllUsers()
   }
 }
