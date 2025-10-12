@@ -32,7 +32,7 @@ export class App {
   
    errore: string = ""
   
-  url: string = "https://opulent-xylophone-pjjxxg99jr9wf7vvr-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  url: string = "https://bookish-train-q77ww96r5rxgfg96-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
   
  
   constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR
@@ -102,16 +102,18 @@ export class App {
     }
   }
 
-  getAllProject()// PRENDO TUTTI I PROGETTI
+  getAllProject(): any// PRENDO TUTTI I PROGETTI
   {
-    this.project_all = []
     this.loading = true
-    this.obs_projects = this.http.get<Project[]>(this.url+"api/project_details")
+    this.obs_projects = this.http.get<Project[]>(this.url+"api/projects_details")
     this.obs_projects.subscribe(this.getData_Project)
+    console.log(this.project_all)
+    return this.project_all
   }
 
   getData_Project = (d: Project[]) =>
   {
+    console.log(d)
     this.project_all = d
     if (this.project_all.length === 0){
       this.errore = "Nessun progetto trovato :/"
@@ -140,7 +142,6 @@ export class App {
   }
 
   ngOnInit(){
-    this.getAllProject()
     this.getAllUsers()
   }
 }
