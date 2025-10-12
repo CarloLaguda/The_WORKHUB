@@ -5,6 +5,7 @@ import { Home } from './home/home';
 import { Login } from './login/login';
 import { UserComponent } from './user-component/user-component';
 import { ProjectsComponent } from './projects-component/projects-component';
+import { PrivacyComponent } from './privacy-component/privacy-component';
 
 export const routes: Routes = [
     { path: 'signUp', component: Registrazione },
@@ -12,5 +13,6 @@ export const routes: Routes = [
     { path: 'home', component: Home },
     { path: 'users', component: UserComponent},
     { path: 'project', component: ProjectsComponent},
+    { path: 'info', component: PrivacyComponent},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
