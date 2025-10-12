@@ -31,38 +31,56 @@ def register():
     data = request.get_json()
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
-    
-    #CAMPI OBBLIGATORI PER LA REGISTRAZIONE
+
+    # --- CAMPI OBBLIGATORI ---
     required_fields = ['username', 'email', 'password', 'first_name', 'last_name', 'eta', 'gender']
     for field in required_fields:
         if field not in data:
             return jsonify({"message": f"Missing field: {field}"}), 400
 
-    #CRIPTAZIONE PASSWORD
-    password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+    username = data['username']
+    email = data['email']
 
-    # CAMPI DI BASE NULL
-    status = data.get('status') or None
-    anni_di_esperienza = data.get('anni_di_esperienza') or None
-    country = data.get('country') or None
-
-    #INSERT DATI
     try:
+        # --- Controllo se username esiste già ---
+        mycursor.execute("SELECT user_id FROM User WHERE username = %s", (username,))
+        existing_user = mycursor.fetchone()
+        if existing_user:
+            return jsonify({"message": "Username already exists"}), 409  # 409 Conflict
+
+        # (Opzionale) Controllo se email esiste già
+        mycursor.execute("SELECT user_id FROM User WHERE email = %s", (email,))
+        existing_email = mycursor.fetchone()
+        if existing_email:
+            return jsonify({"message": "Email already registered"}), 409
+
+        # --- Criptazione password ---
+        password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+
+        # --- Campi opzionali ---
+        status = data.get('status') or None
+        anni_di_esperienza = data.get('anni_di_esperienza') or None
+        country = data.get('country') or None
+
+        # --- Inserimento nuovo utente ---
         mycursor.execute("""
             INSERT INTO User (
                 username, email, password, first_name, last_name, eta, gender,
                 status, anni_di_esperienza, country
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            data['username'], data['email'], password_hash,
+            username, email, password_hash,
             data['first_name'], data['last_name'],
             data['eta'], data['gender'],
             status, anni_di_esperienza, country
         ))
+
         mydb.commit()
         return jsonify({"message": "User successfully registered"}), 201
+
     except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
+        print(f"Error during registration: {err}")
+        return jsonify({"message": f"Database error: {err}"}), 500
 
 
 #LOGIN UTENTE
