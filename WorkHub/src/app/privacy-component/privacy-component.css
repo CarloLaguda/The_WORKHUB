@@ -1,0 +1,80 @@
+* {
+    font-family: Calibri, 'Trebuchet MS', sans-serif;
+
+}/* Struttura principale */
+
+
+.top{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 40px;
+    color: orangered;
+}
+.btn2 {
+    width: 55px;
+    height: 25px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid orangered;
+    border-radius: 4px;
+    color: orangered;
+    transition: all 0.6s ease;
+    position: fixed;
+    top: 10px;     /* distanza dal bordo superiore */
+    right: 10px;   /* distanza dal bordo destro */
+    z-index: 1000; /* per stare sopra gli altri elementi */
+}
+.btn2:hover {
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: white;
+    background-color: orangered;
+}
+
+.wave-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  margin-top: -100px;
+}
+.pagina_cose {
+  display: flex;
+  justify-content: center; /* centra le colonne */
+  gap: 100px;
+  padding: 20px 20px;
+}
+
+.componente {
+  width: 250px; /* colonne piccole */
+  background-color: #f5f5f5;
+  padding: 60px ;
+  border-radius: 12px ;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: solid 1px rgb(192, 125, 0);
+  transition: all 0.6s ease;
+}
+
+.componente:hover {
+  transform: translateY(-2px); /* leggero sollevamento */
+  box-shadow: 0 8px 20px rgba(255, 189, 159, 0.411);
+  margin: solid 2px rgb(192, 125, 0);
+}
+
+.componente h3 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+.componente p {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.pagina_cose{
+    background-color: orangered;
+    width: 100%;
+    height: 850px;
+}

@@ -288,7 +288,7 @@ p, h1, h2, h3, h4, h5, h6{
   left: 20%;
   width: 60%;
   height: 2px;
-  background: #246BCE;
+  background: orangered;
   border-radius: 2px;
 }
 
@@ -540,7 +540,6 @@ p, h1, h2, h3, h4, h5, h6{
   overflow: hidden;
   border-radius: 10px;
   flex-shrink: 0;
-  background-color: #246BCE;
 }
 
 .carosello_wrapper {
