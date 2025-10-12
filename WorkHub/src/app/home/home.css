@@ -303,7 +303,13 @@ p, h1, h2, h3, h4, h5, h6{
   height: 1000px;
   background-color: orangered;
 }
-
+.wave-container2 {
+  position: relative;
+  width: 110%;
+  height: 300px;
+  overflow: hidden;
+  margin-top: -60px;
+}
 
 
 
@@ -427,7 +433,7 @@ p, h1, h2, h3, h4, h5, h6{
 .elementi {
   display: flex;
   justify-content: center;
-  gap: 90px;
+  gap: 140px;
   flex-wrap: wrap;
 }
 
@@ -467,4 +473,194 @@ p, h1, h2, h3, h4, h5, h6{
   color: #666;
   font-size: 17px;
   line-height: 1.5;
+}
+
+
+
+
+
+
+
+
+
+
+.idee {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 200px 100px;
+  gap: 250px;
+  background-color: #ffffff;
+}
+
+.testo_idee {
+  flex: 1;
+  max-width: 450px;
+}
+
+.testo_idee h2 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: orangered;
+}
+
+.testo_idee p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.btn_idee {
+  background-color: orangered; /* Colore di sfondo */
+  color: rgb(255, 255, 255); /* Colore del testo */
+  border: none; /* Rimuove il bordo */
+  width: 140px;
+  margin-top: 10px;
+  border: solid 1px orangered;
+  height: 35px; /* Padding per dimensionare il bottone */
+  font-size: 14px; /* Dimensione del testo */
+  cursor: pointer; /* Cambia il cursore per indicare che è cliccabile */
+  transition: all 0.7s ease; /* Transizione morbida per il cambio colore */
+  background-color: orangered;
+  border: 1px solid orangered;
+  border-radius: 4px;
+}
+.btn_idee:hover {
+  transform: translateY(-1px);
+    box-shadow: 0px 3px 9px rgba(255, 69, 0, 0.5);
+    color: orangered;
+    background-color: white;
+}
+
+.carosello_idee {
+  position: relative;
+  width: 500px;
+  height: 650px;
+  overflow: hidden;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background-color: #246BCE;
+}
+
+.carosello_wrapper {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+}
+
+.slide img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.controlli {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.controlli button {
+  background-color: rgba(255, 255, 255, 0);
+  color: white;
+  border: none;
+  font-size: 1.7rem;
+  cursor: pointer;
+  padding: 6px 6px;
+  border-radius:4px;
+  transition: background 0.4s;
+}
+.controlli button:hover {
+  background-color: rgba(77, 77, 77, 0.7);
+}
+
+.wave-container3 {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  margin-top: -200px;
+}
+.fine{
+  background-color: orangered;
+  height: 240px;
+  width: 100%;
+}
+
+
+
+
+
+.fine {
+  background-color: orangered;
+  color: #ddd;
+  padding: 0px 90px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.testo_fine {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1500px;
+  margin-bottom: 40px;
+}
+
+.colonna {
+  flex: 1;
+  min-width: 200px;
+  margin: 10px 20px;
+}
+
+.colonna h3,
+.colonna h4 {
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.colonna p {
+  font-size: 0.95rem;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.colonna ul {
+  list-style: none;
+  padding: 0;
+}
+
+.colonna ul li {
+  margin: 8px 0;
+}
+
+.colonna ul li a {
+  text-decoration: none;
+  color: #bbb;
+  transition: color 0.2s ease;
+}
+
+.colonna ul li a:hover {
+  color: #ffffff;
+}
+
+
+.copyright {
+  border-top: 1px solid #ffffff;
+  width: 110%;
+  text-align: center;
+  padding-top: 15px;
+  font-size: 0.9rem;
+  color: rgb(255, 255, 255);
 }
