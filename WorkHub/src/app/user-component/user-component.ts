@@ -42,18 +42,18 @@ export class UserComponent {
     this.expandedUserId = this.expandedUserId === userId ? null : userId;
   }
 
+  
   applyFilters() {
-    this.Users = this.userService.getFilteredUsers(
-      this.filterAge,
-      this.filterSkill,
-      this.filterCountry
-    );
+      this.Users = this.userService.getFilteredUsers(
+        this.filterAge,
+        this.filterSkill,
+        this.filterCountry
+      );
   }
-
-  clearFilters() {
-    this.filterAge = undefined;
-    this.filterSkill = undefined;
-    this.filterCountry = undefined;
-    this.Users = this.userService.getAllUsers();
-  }
+    clearFilters() {
+      this.filterAge = undefined;
+      this.filterSkill = undefined;
+      this.filterCountry = undefined;
+      this.Users = this.userService.getAllUsers();
+    }
 }

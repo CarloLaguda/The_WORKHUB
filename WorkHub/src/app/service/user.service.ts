@@ -8,7 +8,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://verbose-broccoli-wrrww9xx7qgv2vgrp-5000.app.github.dev/api/users'; // URL della tua API
+  private apiUrl = 'https://orange-fortnight-v66xxgwwv97wc6qpx-5000.app.github.dev/api/users'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 

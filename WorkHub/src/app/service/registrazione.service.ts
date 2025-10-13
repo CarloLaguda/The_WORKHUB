@@ -8,7 +8,7 @@ import { Register } from '../models/register.model';
 })
 export class RegistrationService {
 
-  private baseUrl: string = "https://verbose-broccoli-wrrww9xx7qgv2vgrp-5000.app.github.dev/api";
+  private baseUrl: string = "https://orange-fortnight-v66xxgwwv97wc6qpx-5000.app.github.dev/api";
 
   constructor(private http: HttpClient) { }
 

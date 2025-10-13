@@ -1,10 +1,59 @@
+
+<div class="filters-projects">
+  <label>
+    Skill richiesta:
+    <select [(ngModel)]="filterProjectSkill">
+      <option value="">-- Tutte le skill --</option>
+      @for(skill of skillsList; track skill) {
+        <option [value]="skill">{{ skill }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Disponibilità:
+    <select [(ngModel)]="filterProjectAvailability">
+      <option value="full">Full</option>
+      <option value="open">Open</option>
+    </select>
+  </label>
+
+  <button (click)="applyProjectFilters()">Filtra progetti</button>
+  <button (click)="clearProjectFilters()">Reset progetti</button>
+</div>
+
+<hr />
+
+<!-- 🔹 Lista progetti filtrata -->
 @if (projects | async; as projects) {
-  @for (pro of projects; track pro) {
-    <div class="project">
-      <h1>{{ pro.title }}</h1>
-      <h4>Numero di persone: {{ pro.user_count }}</h4>
-    </div>
-  }
+  <div>
+    @for (pro of projects; track pro) {
+      <!-- Applica filtro skill e availability -->
+      @if (
+        (!filterProjectSkill || pro.required_skills.includes(filterProjectSkill)) &&
+        (!filterProjectAvailability || pro.availability === filterProjectAvailability)
+      ) {
+        <div class="project-card">
+          <h1>{{ pro.title }}</h1>
+          <p>Numero di persone: {{ pro.user_count }}</p>
+
+          <!-- Toggle dettagli progetto -->
+          <button (click)="toggleProjectDetails(pro.project_id)">
+            {{ expandedProjectId === pro.project_id ? 'Nascondi dettagli' : 'Scopri di più' }}
+          </button>
+
+          @if (expandedProjectId === pro.project_id) {
+            <div class="details">
+              <p>Skill richieste: {{ pro.required_skills }}</p>
+              <p>Disponibilità: {{ pro.availability }}</p>
+              <p>Descrizione: {{ pro.description }}</p>
+            </div>
+          }
+        </div>
+        <br>
+      }
+    }
+  </div>
 } @else {
   <p>Caricamento in corso...</p>
 }

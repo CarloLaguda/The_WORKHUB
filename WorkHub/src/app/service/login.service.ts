@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'https://verbose-broccoli-wrrww9xx7qgv2vgrp-5000.app.github.dev/api/login';
+  private apiUrl = 'https://orange-fortnight-v66xxgwwv97wc6qpx-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 
