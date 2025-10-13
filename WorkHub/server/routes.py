@@ -161,9 +161,15 @@ def search_users():
 
     #NOME SKILL
     if skills:
-        conditions.append("Skill.skill_name = %s")
-        params.append(skills)
-
+        conditions.append("""
+        User.user_id IN (
+            SELECT us.user_id 
+            FROM User_skill us
+            JOIN Skill s ON us.skill_id = s.skill_id
+            WHERE s.skill_name LIKE %s
+        )
+    """)
+        params.append(f"%{skills}%")
 
     #COSTRUZIONE QUERY
     query = base_select + base_from_and_joins

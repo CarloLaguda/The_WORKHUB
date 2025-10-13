@@ -1,9 +1,60 @@
+<div class="filters">
+  <label>
+    Età minima:
+    <input type="number" [(ngModel)]="filterAge" />
+  </label>
+
+  <label>
+    Skill:
+    <select [(ngModel)]="filterSkill">
+      <option value="">-- Tutte le skill --</option>
+      @for (skill of skillsList; track skill) {
+        <option [value]="skill">{{ skill }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Paese:
+    <select [(ngModel)]="filterCountry">
+      <option value="">-- Tutti i paesi --</option>
+      @for(country of countriesList; track country) {
+        <option [value]="country">{{ country }}</option>
+      }
+    </select>
+  </label>
+
+  <button (click)="applyFilters()">Filtra</button>
+  <button (click)="clearFilters()">Reset</button>
+</div>
+
+<hr />
+
 @if (Users | async; as Users) {
-  @for (u of Users; track u) {
-    <div>
-      <h1>{{ u.first_name }}</h1>
-    </div>
-  }
+  <div>
+    @for (u of Users; track u.user_id) {
+      <div class="user-card">
+        <p><b>{{ u.first_name }} {{ u.last_name }}</b></p>
+        <p>Età: {{ u.eta }}</p>
+
+        <!-- 🔹 Toggle solo per questo utente -->
+        <button (click)="toggleDetails(u.user_id)">
+          {{ expandedUserId === u.user_id ? 'Nascondi dettagli' : 'Scopri di più' }}
+        </button>
+
+        <!-- 🔹 Mostra dettagli solo se questo utente è espanso -->
+        @if (expandedUserId === u.user_id) {
+          <div class="details">
+            <p>Skill: {{ u.skills }}</p>
+            <p>Paese: {{ u.country }}</p>
+            <p>Anni di esperienza: {{ u.anni_di_esperienza }}</p>
+            <p>Status: {{ u.status }}</p>
+          </div>
+        }
+      </div>
+      <br>
+    }
+  </div>
 } @else {
   <p>Caricamento in corso...</p>
 }
