@@ -1,0 +1,12 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.profileImage{
+    border-radius: 50%;
+    background-color: lightgrey;
+    width: 10vw;
+    aspect-ratio: 1 / 1;
+}
