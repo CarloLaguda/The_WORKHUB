@@ -39,12 +39,14 @@ export class ProjectsComponent {
   // Filtri progetto
   applyProjectFilters() {
     // Se vuoi filtrare lato server, fai qui la chiamata con parametri
+    this.projects = this.projectService.getFilteredProjects(this.filterProjectSkill, this.filterProjectAvailability);
     console.log('Filtri applicati', this.filterProjectSkill, this.filterProjectAvailability);
   }
 
   clearProjectFilters() {
     this.filterProjectSkill = '';
     this.filterProjectAvailability = '';
+    this.projects = this.projectService.getAllProjects();
   }
 
   ngOnInit(): void {

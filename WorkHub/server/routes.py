@@ -322,36 +322,48 @@ def get_project_details():
 
 #UPDATE USER, PER COUNTRY ANNI EXP E STATUS
 @app.route('/api/update_user', methods=['PUT'])
+@app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
 
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
 
-    #ALMENO UN DATO DA AGGIORNARE
-    update_fields = ['status', 'anni_di_esperienza', 'country']
+    # 🔧 Tutti i campi aggiornabili nella tabella User
+    update_fields = [
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'eta',
+        'gender',
+        'status',
+        'anni_di_esperienza',
+        'country'
+    ]
+
     updates = []
     params = []
 
+    # 🔍 Costruzione dinamica della query (solo i campi presenti nel JSON)
     for field in update_fields:
-        if field in data:
+        if field in data and data[field] is not None:
             updates.append(f"{field} = %s")
             params.append(data[field])
 
     if not updates:
         return jsonify({"message": "No fields to update"}), 400
 
-    #AGGIUNGI ID UTENTE
+    # 🧍‍♂️ Recupera user_id (obbligatorio)
     user_id = data.get('user_id')
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
 
-    #QUERY
+    # 🧩 Query finale
     query = f"UPDATE User SET {', '.join(updates)} WHERE user_id = %s"
     params.append(user_id)
 
     try:
-        #ESEGUE QUERY
         mycursor.execute(query, tuple(params))
         mydb.commit()
 
@@ -362,7 +374,60 @@ def update_user():
 
     except mysql.connector.Error as err:
         print(f"Error updating user data: {err}")
-        return jsonify({"message": f"Error: {err}"}), 500
+        return jsonify({"message": f"Database error: {err}"}), 500
+    
+
+@app.route('/api/add_user_skills_by_name', methods=['POST'])
+def add_user_skills_by_name():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"message": "Missing JSON data"}), 400
+
+    user_id = data.get('user_id')
+    skill_names = data.get('skill_names')
+
+    if not user_id:
+        return jsonify({"message": "User ID is required"}), 400
+    if not skill_names or not isinstance(skill_names, list):
+        return jsonify({"message": "A list of skill names is required"}), 400
+
+    try:
+        # 🔹 Ottieni gli ID delle skill dai nomi
+        format_strings = ','.join(['%s'] * len(skill_names))
+        mycursor.execute(f"SELECT skill_id, skill_name FROM Skill WHERE skill_name IN ({format_strings})", tuple(skill_names))
+        result = mycursor.fetchall()
+
+        if not result:
+            return jsonify({"message": "No matching skills found"}), 404
+
+        skill_map = {name: sid for sid, name in result}  # mappa nome -> id
+        # Filtra solo le skill esistenti
+        existing_skill_ids = list(skill_map.values())
+
+        # 🔹 Recupera le skill già associate all'utente
+        mycursor.execute("SELECT skill_id FROM User_skill WHERE user_id = %s", (user_id,))
+        already_linked = {row[0] for row in mycursor.fetchall()}
+
+        # 🔹 Filtra solo le nuove skill da inserire
+        new_skill_ids = [sid for sid in existing_skill_ids if sid not in already_linked]
+
+        if not new_skill_ids:
+            return jsonify({"message": "All provided skills are already linked to the user"}), 200
+
+        # 🔹 Inserimento multiplo
+        values = [(user_id, sid) for sid in new_skill_ids]
+        mycursor.executemany("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", values)
+        mydb.commit()
+
+        return jsonify({
+            "message": "Skills added successfully",
+            "added_skills": [name for name in skill_names if name in skill_map and skill_map[name] in new_skill_ids]
+        }), 201
+
+    except mysql.connector.Error as err:
+        print(f"Database error while adding skills: {err}")
+        return jsonify({"message": f"Database error: {err}"}), 500
 
 
 if __name__ == '__main__':

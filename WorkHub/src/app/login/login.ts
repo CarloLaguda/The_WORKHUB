@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { LoginService } from '../service/login.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
 })
 export class Login implements OnInit, OnDestroy {
 
@@ -47,12 +48,6 @@ export class Login implements OnInit, OnDestroy {
           if (res.user_id) {
             localStorage.setItem('user_id', res.user_id.toString());
           }
-
-          // chiudi popup e puoi reindirizzare dopo 2s
-          setTimeout(() => {
-            this.popupVisible = false;
-            // this.router.navigate(['/home']);
-          }, 2000);
 
         } else {
           this.showPopup('❌ Credenziali non valide', 'error');

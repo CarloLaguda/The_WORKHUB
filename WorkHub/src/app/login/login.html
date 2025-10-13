@@ -15,15 +15,15 @@
         <div class="form">
           <input placeholder="username / email" #creddenziale>
           <div class="password-container">
-  <input 
-    [type]="showPassword ? 'text' : 'password'" 
-    placeholder="password" 
-    #password>
-  
-  <span class="toggle-password" (click)="togglePassword()">
-    <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-  </span>
-</div>
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              placeholder="password" 
+              #password>
+            
+            <span class="toggle-password" (click)="togglePassword()">
+              <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+            </span>
+          </div>
           <div class="btns">
             <button class="formBtn1" (click)="login_start(creddenziale, password)">SIGN IN</button>
             <button routerLink="/signUp" class="formBtn2">SIGN UP</button>
@@ -53,8 +53,23 @@
   </div>
 </div>
 
-<!-- POPUP -->
-<div class="popup" *ngIf="popupVisible" [ngClass]="{ 'popup-success': popupType === 'success', 'popup-error': popupType === 'error' }">
-  <p>{{ popupMessage }}</p>
-  <button (click)="closePopup()">✖</button>
+<!-- ✅ POPUP SUCCESSO -->
+<div class="popup-overlay"
+     *ngIf="popupVisible && popupType === 'success'">
+  <div class="popup" (click)="$event.stopPropagation()">
+    <h2>✅ Login Successful</h2>
+    <p>You logged in successfully!</p>
+    <button (click)="closePopup()" routerLink="/profile">Close</button>
+  </div>
+</div>
+
+<!-- ❌ POPUP ERRORE -->
+<div class="popup-overlay"
+     *ngIf="popupVisible && popupType === 'error'"
+     (click)="closePopup()">
+  <div class="popup" (click)="$event.stopPropagation()">
+    <h2>⚠️ Login Failed</h2>
+    <p>{{ popupMessage }}</p>
+    <button (click)="closePopup()">Close</button>
+  </div>
 </div>

@@ -51,9 +51,9 @@ export class UserComponent {
       );
   }
     clearFilters() {
-      this.filterAge = undefined;
-      this.filterSkill = undefined;
-      this.filterCountry = undefined;
+      this.filterAge = 0;
+      this.filterSkill = '';
+      this.filterCountry = '';
       this.Users = this.userService.getAllUsers();
     }
 }

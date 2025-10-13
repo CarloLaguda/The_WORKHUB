@@ -94,16 +94,16 @@
 </div>
 
 <!-- ✅ POPUP SUCCESSO -->
-<div class="popup-overlay" *ngIf="popupType === 'success'" (click)="closePopup()">
+<div class="popup-overlay" *ngIf="popupType === 'success'">
     <div class="popup" (click)="$event.stopPropagation()">
         <h2>✅ Registration Successful</h2>
         <p>Your account has been created successfully!</p>
-        <button (click)="closePopup()">Close</button>
+        <button (click)="closePopup()" routerLink="/signIn">Close</button>
     </div>
 </div>
 
 <!-- ❌ POPUP ERRORE -->
-<div class="popup-overlay" *ngIf="popupType === 'error'" (click)="closePopup()">
+<div class="popup-overlay" *ngIf="popupType === 'error'">
     <div class="popup" (click)="$event.stopPropagation()">
         <h2>⚠️ Registration Failed</h2>
         <p>{{ errorMessage }}</p>

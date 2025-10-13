@@ -29,14 +29,12 @@
   <div>
     @for (pro of projects; track pro) {
       <!-- Applica filtro skill e availability -->
-      @if (
-        (!filterProjectSkill || pro.required_skills.includes(filterProjectSkill)) &&
-        (!filterProjectAvailability || pro.availability === filterProjectAvailability)
-      ) {
         <div class="project-card">
           <h1>{{ pro.title }}</h1>
           <p>Numero di persone: {{ pro.user_count }}</p>
-
+          @if(!pro.is_full){
+            <button>Unisciti al Proggetto</button>
+          }
           <!-- Toggle dettagli progetto -->
           <button (click)="toggleProjectDetails(pro.project_id)">
             {{ expandedProjectId === pro.project_id ? 'Nascondi dettagli' : 'Scopri di più' }}
@@ -52,8 +50,7 @@
         </div>
         <br>
       }
-    }
   </div>
-} @else {
+}@else {
   <p>Caricamento in corso...</p>
 }
