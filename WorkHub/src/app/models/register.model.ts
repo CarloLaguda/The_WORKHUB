@@ -3,8 +3,8 @@ export class Register{
         public username: string,
         public email: string,
         public password: string,
-        public nome: string,
-        public cognome: string,
+        public first_name: string,
+        public last_name: string,
         public eta: number,
         public gender: string
     ){}

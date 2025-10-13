@@ -1,8 +1,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-
-<!--
-<div class="pagina" (keydown)="onKeydown($event)">
+<div class="pagina">
     <div class="immagine">
         <img class="img_pagina" src="">
         <div class="wave-container">
@@ -94,4 +92,21 @@
         </div>
     </div>
 </div>
--->
+
+<!-- ✅ POPUP SUCCESSO -->
+<div class="popup-overlay" *ngIf="popupType === 'success'" (click)="closePopup()">
+    <div class="popup" (click)="$event.stopPropagation()">
+        <h2>✅ Registration Successful</h2>
+        <p>Your account has been created successfully!</p>
+        <button (click)="closePopup()">Close</button>
+    </div>
+</div>
+
+<!-- ❌ POPUP ERRORE -->
+<div class="popup-overlay" *ngIf="popupType === 'error'" (click)="closePopup()">
+    <div class="popup" (click)="$event.stopPropagation()">
+        <h2>⚠️ Registration Failed</h2>
+        <p>{{ errorMessage }}</p>
+        <button (click)="closePopup()">Close</button>
+    </div>
+</div>

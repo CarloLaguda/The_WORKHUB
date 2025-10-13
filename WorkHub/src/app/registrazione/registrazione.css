@@ -342,3 +342,77 @@
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+
+
+
+
+
+
+
+/* --- POPUP OVERLAY --- */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+/* --- POPUP BOX --- */
+.popup {
+  background: #fff;
+  color: #333;
+  border-radius: 16px;
+  padding: 30px 40px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
+}
+
+.popup h2 {
+  margin-bottom: 10px;
+}
+
+/* ✅ Success popup */
+.popup-overlay .popup h2:contains("Successful") {
+  color: #2b6cb0;
+}
+
+/* ❌ Error popup */
+.popup-overlay .popup h2:contains("Failed") {
+  color: #c53030;
+}
+
+.popup button {
+  margin-top: 15px;
+  background: #2b6cb0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.popup button:hover {
+  background: #2a4365;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

@@ -52,3 +52,9 @@
     </div>
   </div>
 </div>
+
+<!-- POPUP -->
+<div class="popup" *ngIf="popupVisible" [ngClass]="{ 'popup-success': popupType === 'success', 'popup-error': popupType === 'error' }">
+  <p>{{ popupMessage }}</p>
+  <button (click)="closePopup()">✖</button>
+</div>
