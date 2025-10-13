@@ -1,1 +1,9 @@
-<p>user-component works!</p>
+@if (Users | async; as Users) {
+  @for (u of Users; track u) {
+    <div>
+      <h1>{{ u.first_name }}</h1>
+    </div>
+  }
+} @else {
+  <p>Caricamento in corso...</p>
+}

@@ -1,4 +1,10 @@
-<div class="project">
-    <h1>{{project.title}}</h1>
-    <h4>Peoples: {{project.user_count}}</h4>
-</div>
+@if (projects | async; as projects) {
+  @for (pro of projects; track pro) {
+    <div class="project">
+      <h1>{{ pro.title }}</h1>
+      <h4>Numero di persone: {{ pro.user_count }}</h4>
+    </div>
+  }
+} @else {
+  <p>Caricamento in corso...</p>
+}
