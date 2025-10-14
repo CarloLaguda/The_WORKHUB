@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { App } from '../app';
 import { User } from '../models/user.model';
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,9 +13,18 @@ export class Profile implements OnInit{
 
   utente!: User
 
-  constructor(public app: App){}
+  user: User | null = null;
+
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.utente = this.app.current_user_Object
+    // ✅ Sottoscriviti al BehaviorSubject per ricevere i dati aggiornati
+    this.userService.getCurrentUserObservable().subscribe({
+      next: (u) => {
+        this.user = u;
+        console.log('👤 Profilo caricato:', u);
+      }
+    });
   }
+
 }

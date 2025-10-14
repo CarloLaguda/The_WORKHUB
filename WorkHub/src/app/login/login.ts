@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { LoginService } from '../service/login.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class Login implements OnInit, OnDestroy {
   popupMessage: string = '';
   popupType: 'success' | 'error' = 'success';
 
-  constructor(private loginService: LoginService) {}
+  constructor(private loginService: LoginService, private userService: UserService) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
@@ -46,6 +47,7 @@ export class Login implements OnInit, OnDestroy {
 
           // salvi user_id (opzionale)
           if (res.user_id) {
+            this.userService.getCurrentUser(res.user_id)
             localStorage.setItem('user_id', res.user_id.toString());
           }
 

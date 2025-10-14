@@ -1,21 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Project } from '../models/project.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://stunning-space-goldfish-g44gg566qvx9h777-5000.app.github.dev/api/users'; // URL della tua API
-
+  private apiUrl = 'https://didactic-adventure-4j66vrj45vr2q6v5-5000.app.github.dev/api/users'; // URL della tua API
+  public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
 
+  getCurrentUser(id_user: number){
+    return this.http.get<User>(`${this.apiUrl}?user_id=${id_user}`).subscribe({
+      next: (user) => {
+        this.currentUser.next(user); // ✅ aggiorna il BehaviorSubject
+        console.log(this.currentUser)
+      },
+      error: (err) => {
+        console.error('Errore durante il recupero utente:', err);
+        this.currentUser.next(null); // opzionale, reset in caso di errore
+      }
+    });
+  }
+  // ✅ Metodo per ottenere l'utente come Observable
+  getCurrentUserObservable(): Observable<User | null> {
+    return this.currentUser.asObservable();
+  }
+
+  // ✅ Metodo per ottenere direttamente il valore (non reattivo)
+  getCurrentUserValue(): User | null {
+    return this.currentUser.value;
+  }
+  
   getFilteredUsers(age?: number, skills?: string, country?: string): Observable<User[]> {
     let params = new HttpParams();
 

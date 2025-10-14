@@ -55,6 +55,11 @@ export class Registrazione implements OnInit, OnDestroy {
       return;
     }
 
+    if (!email.value.includes('@')) {
+      this.openPopup('error', '⚠️ Devi inserire una email valida.');
+    return;
+    }
+
     if (password.value !== conf_pass.value) {
       this.passwordError = true;
       this.openPopup('error', 'Le password non coincidono.');

@@ -8,7 +8,7 @@ import { Register } from '../models/register.model';
 })
 export class RegistrationService {
 
-  private baseUrl: string = "https://stunning-space-goldfish-g44gg566qvx9h777-5000.app.github.dev/api";
+  private baseUrl: string = "https://didactic-adventure-4j66vrj45vr2q6v5-5000.app.github.dev//api";
 
   constructor(private http: HttpClient) { }
 
