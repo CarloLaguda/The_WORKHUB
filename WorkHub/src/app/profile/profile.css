@@ -1,12 +1,80 @@
 .container{
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+    width: 100vw;
+}
+
+.center{
+    border: green solid;
+    width: 60vw;
+    height: 80vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.info, .info2{
+    border: blue solid;
+    flex-grow: 1;
+}
+
+.info{
+    display: flex;
     flex-direction: column;
-    padding: 10px;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .profileImage{
     border-radius: 50%;
-    background-color: lightgrey;
+    background-color: orangered;
     width: 10vw;
     aspect-ratio: 1 / 1;
+}
+
+.skillSet{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.progetti{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.prova{
+    width: 100%;
+    border: solid orangered 1px;
+    height: 100px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.basicInfo{
+    padding: 20px;
+    width: 40%;
+}
+
+.separation{
+    border-top: solid 1px orangered;
+    width: 40%;
+}
+
+.expYears{
+    padding: 20px;
+}
+
+.otherInfo{
+    padding: 20px;
+    width: 40%;
+}
+
+h1, h3{
+    margin: 0px;
+    width: fit-content;
 }
