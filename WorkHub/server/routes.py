@@ -205,21 +205,135 @@ def search_users():
 
 
 #CREAZIONE
-@app.route('/api/projects', methods=['POST'])
+@app.route('/api/create_projects', methods=['POST'])
 def create_project():
     data = request.get_json()
-    
-    #INSERT DEI VALORI
+    title = data.get('title')
+    description = data.get('description')
+    availability = data.get('availability')  # esempio: 'open' o 'full'
+    max_persone = data.get('max_persone')
+    creator_user_id = data.get('creator_user_id')
+
+    # Validazione minima (puoi ampliarla)
+    if not all([title, description, availability, max_persone, creator_user_id]):
+        return jsonify({"message": "Missing required fields"}), 400
+
     try:
+        # Inserisco il progetto
         mycursor.execute("""
             INSERT INTO Project (title, description, availability, max_persone, is_full)
             VALUES (%s, %s, %s, %s, %s)
-        """, (data['title'], data['description'], data['availability'], data['max_persone'], data['is_full']))
+        """, (title, description, availability, max_persone, 1 if availability == 'full' else 0))
 
         mydb.commit()
-        return jsonify({"message": "Project successfully created"}), 201
+
+        # Prendo l'id del progetto appena creato
+        project_id = mycursor.lastrowid
+
+        # Inserisco la relazione creatore
+        mycursor.execute("""
+            INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
+            VALUES (%s, %s, %s, %s)
+        """, (project_id, creator_user_id, datetime.now().strftime('%Y-%m-%d'), 1))
+
+        mydb.commit()
+
+        return jsonify({"message": "Project created and creator linked", "project_id": project_id}), 201
+
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
+
+
+#LEGARE UN UTENTE AD UN PROGETTO
+@app.route('/api/join_user_projects', methods=['POST'])
+def join_project():
+    data = request.get_json()
+    project_id = data['project_id']
+    user_id = data['user_id']
+    is_creator = data.get('is_creator', 0)  # Default 0 se non specificato
+    
+    try:
+        # Controlla se il progetto è pieno
+        mycursor.execute("""
+            SELECT is_full FROM Project WHERE project_id = %s
+        """, (project_id,))
+        project = mycursor.fetchone()
+        
+        if project and project[0]:
+            return jsonify({"message": "Project is full"}), 400
+        
+        # Inserisco l'utente nel progetto
+        mycursor.execute("""
+            INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
+            VALUES (%s, %s, %s, %s)
+        """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), is_creator))
+        
+        mydb.commit()
+        return jsonify({"message": "User successfully joined the project"}), 200
+        
+    except mysql.connector.Error as err:
+        return jsonify({"message": f"Error: {err}"}), 400
+    
+#LEGARE SKILL A USER
+@app.route('/api/join_projects_skill', methods=['POST'])
+def add_skill_to_project():
+    data = request.get_json()
+    project_id = data['project_id']
+    skill_name = data['skill_name']  # Ora ricevi il nome della skill
+    
+    try:
+        # Recupera l'id della skill dal nome
+        mycursor.execute("""
+            SELECT skill_id FROM Skill WHERE skill_name = %s
+        """, (skill_name,))
+        result = mycursor.fetchone()
+        
+        if not result:
+            return jsonify({"message": f"Skill '{skill_name}' not found"}), 404
+        
+        skill_id = result[0]
+        
+        # Ora inserisci la relazione nel progetto
+        mycursor.execute("""
+            INSERT INTO Project_skill (project_id, skill_id)
+            VALUES (%s, %s)
+        """, (project_id, skill_id))
+
+        mydb.commit()
+        return jsonify({"message": f"Skill '{skill_name}' successfully added to the project"}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"message": f"Error: {err}"}), 400
+
+#LEGARE UN PROGETTO AD UN ENV
+@app.route('/api/join_projects_env', methods=['POST'])
+def add_env_to_project():
+    data = request.get_json()
+    project_id = data['project_id']
+    env_name = data['env_name']  # Prendiamo il nome dell'env
+    
+    try:
+        # Recupera l'id dell'env dal nome
+        mycursor.execute("""
+            SELECT ambit_id FROM Env WHERE ambit_name = %s
+        """, (env_name,))
+        result = mycursor.fetchone()
+        
+        if not result:
+            return jsonify({"message": f"Environment '{env_name}' not found"}), 404
+        
+        env_id = result[0]
+        
+        # Inserisci la relazione progetto-env
+        mycursor.execute("""
+            INSERT INTO Project_env (project_id, ambit_id)
+            VALUES (%s, %s)
+        """, (project_id, env_id))
+
+        mydb.commit()
+        return jsonify({"message": f"Environment '{env_name}' successfully added to the project"}), 200
+    except mysql.connector.Error as err:
+        return jsonify({"message": f"Error: {err}"}), 400
+
 
 #FILTRO PROGETTO PER DETTAGLI
 @app.route('/api/projects_details', methods=['GET'])
