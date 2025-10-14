@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'https://orange-fortnight-v66xxgwwv97wc6qpx-5000.app.github.dev/api/login';
+  private apiUrl = 'https://stunning-space-goldfish-g44gg566qvx9h777-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 

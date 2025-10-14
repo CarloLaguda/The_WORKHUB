@@ -322,7 +322,6 @@ def get_project_details():
 
 #UPDATE USER, PER COUNTRY ANNI EXP E STATUS
 @app.route('/api/update_user', methods=['PUT'])
-@app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
 

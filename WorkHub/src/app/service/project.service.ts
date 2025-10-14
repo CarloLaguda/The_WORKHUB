@@ -7,7 +7,7 @@ import { Project } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://orange-fortnight-v66xxgwwv97wc6qpx-5000.app.github.dev/api/projects_details'; // URL della tua API
+  private apiUrl = 'https://stunning-space-goldfish-g44gg566qvx9h777-5000.app.github.dev/api/projects_details'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 
