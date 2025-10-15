@@ -16,4 +16,6 @@ export interface User { //MODELLO PER USER GENERALE
     // 4. Identificativi
     user_id: number;
     username: string;
+
+    password: string
 }

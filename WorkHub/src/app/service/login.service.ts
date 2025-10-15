@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'https://opulent-spork-wrrww9x6p7493557w-5000.app.github.dev/api/login';
+  private apiUrl = 'https://musical-lamp-x55jj9xxwg9j3vr4w-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 

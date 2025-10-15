@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://opulent-spork-wrrww9x6p7493557w-5000.app.github.dev/api/users'; // URL della tua API
+  private apiUrl = 'https://musical-lamp-x55jj9xxwg9j3vr4w-5000.app.github.dev/api/users'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 
@@ -50,4 +50,9 @@ export class UserService {
   logout(): void {
     this.currentUser.next(null); 
   }
+
+  updateUser(data: Partial<User> & { user_id: number }){
+    return this.http.put<{ message: string }>("https://musical-lamp-x55jj9xxwg9j3vr4w-5000.app.github.dev/api/update_user", data);
+  }
+
 }

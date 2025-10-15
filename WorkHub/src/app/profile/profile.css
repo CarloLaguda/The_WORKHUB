@@ -21,6 +21,12 @@
     flex-grow: 1;
 }
 
+.email-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .info{
     display: flex;
     flex-direction: column;

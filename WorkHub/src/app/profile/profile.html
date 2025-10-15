@@ -9,23 +9,95 @@
             <div class="separation"></div>
             <div class="otherInfo">
                 <div class="editInfo">
-                    <h4>Country: {{user?.country}}</h4>
-                    <button class="editBtn">Edit</button>
+                    <h3>Country: {{user?.country}}</h3>
+                    <div class="email-edit">
+                        <div class="email-edit">
+                            @if (tCountry) {
+                                <input type="text" placeholder="Inseerisci paese" #country>
+                                <button (click)="updateUser('country', country.value)">Aggiorna</button>
+                                <button class="editBtn" (click)="toggleCountry()">Chiudi</button>
+                            } @else {
+                                <button class="editBtn" (click)="toggleCountry()">Edit</button>
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div class="editInfo">
-                    <h4>Age: {{user?.eta}}</h4>
-                    <button class="editBtn">Edit</button>
+                    <h3>Status: {{user?.status}}</h3>
+                    <div class="email-edit">
+                        @if (tStatus) {
+                            <select [(ngModel)]="selectedStatus">
+                                <option value="">Il tuo status</option>
+                                <option value="libero">Libero</option>
+                                <option value="occupato">Occupato</option>
+                            </select>
+                            <button (click)="updateUser('status', selectedStatus)">Aggiorna</button>
+                            <button class="editBtn" (click)="toggleStatus()">Chiudi</button>
+                        } @else {
+                            <button class="editBtn" (click)="toggleStatus()">Edit</button>
+                        }
+                    </div>
                 </div>
                 <div class="editInfo">
-                    <h4>Sex: {{user?.gender}}</h4>
-                    <button class="editBtn">Edit</button>
+                   <h3>Anni di esperienza: {{user?.anni_di_esperienza}}</h3>
+                    <div class="email-edit">
+                        @if (tAnnixp) {
+                            <input type="number" placeholder="Inseerisci anni" #annixp>
+                            <button (click)="updateUser('country', annixp.value)">Aggiorna</button>
+                            <button class="editBtn" (click)="toggleAnniexp()">Chiudi</button>
+                        } @else {
+                            <button class="editBtn" (click)="toggleAnniexp()">Edit</button>
+                        }
+                    </div>
                 </div>
             </div>
             <div class="separation"></div>
             <div class="statusInfo">
                 <div class="editInfo">
-                    <h3>Status: {{user?.status}}</h3>
-                    <button class="editBtn">Edit</button>
+                    <h3>Username: {{user?.username}}</h3>
+                    <div class="email-edit">
+                        @if (tUser) {
+                            <input type="text" placeholder="Nuovo username" #nuovaUser>
+                            <button (click)="updateUser('anni_di_esperienza', nuovaUser.value)">Aggiorna</button>
+                            <button class="editBtn" (click)="toggleUsername()">Chiudi</button>
+                        } @else {
+                            <button class="editBtn" (click)="toggleUsername()">Edit</button>
+                        }
+                    </div>
+                </div>
+                <div class="editInfo">
+                    <h3>Email: {{user?.email}}</h3>
+                    <div class="email-edit">
+                        @if (tMail) {
+                            <input type="email" placeholder="Nuova email" #nuovaMail>
+                            <button (click)="updateUser('email', nuovaMail.value)">Aggiorna</button>
+                            <button class="editBtn" (click)="toggleMail()">Chiudi</button>
+                        } @else {
+                            <button class="editBtn" (click)="toggleMail()">Edit</button>
+                        }
+                    </div>
+                </div>
+                <div class="editInfo">
+                    <h3>Password: <p>La tua password non viene mostrata per privacy</p></h3>
+                    <div class="email-edit">
+                        @if (tPass) {
+                            <input 
+                                [type]="showPassword ? 'text' : 'password'" 
+                                placeholder="password" 
+                                #nuovapassword>
+                            <button (click)="togglePasswordText()">
+                                @if (showPassword) {
+                                    nascondi
+                                }@else {
+                                    mostra
+                                }
+                            </button>
+                            <button (click)="updateUser('password', nuovapassword.value)">Aggiorna</button>
+                            <button class="editBtn" (click)="togglePass()">Chiudi</button>
+                        } @else {
+                            <button class="editBtn" (click)="togglePass()">Edit</button>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
