@@ -7,7 +7,7 @@ import { Project } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://didactic-adventure-4j66vrj45vr2q6v5-5000.app.github.dev/api/projects_details'; // URL della tua API
+  private apiUrl = 'https://automatic-fortnight-977ppqww9r67hxgg4-5000.app.github.dev/api/projects_details'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 

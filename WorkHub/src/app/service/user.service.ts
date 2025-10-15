@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://didactic-adventure-4j66vrj45vr2q6v5-5000.app.github.dev/api/users'; // URL della tua API
+  private apiUrl = 'https://automatic-fortnight-977ppqww9r67hxgg4-5000.app.github.dev/api/users'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 
@@ -45,5 +45,9 @@ export class UserService {
     if (country) params = params.set('country', country);
 
     return this.http.get<User[]>(this.apiUrl, { params });
+  }
+
+  logout(): void {
+    this.currentUser.next(null); 
   }
 }
