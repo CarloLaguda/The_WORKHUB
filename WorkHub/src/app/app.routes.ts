@@ -7,7 +7,7 @@ import { ProjectsComponent } from './projects-component/projects-component';
 import { PrivacyComponent } from './privacy-component/privacy-component';
 import { Profile } from './profile/profile';
 
-import { AuthGuard } from './service/auth-guard';  // percorso corretto
+import { AuthGuard } from './service/auth-guard/auth-guard';  // percorso corretto
 
 export const routes: Routes = [
   { path: 'signUp', component: Registrazione },
