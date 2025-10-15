@@ -561,48 +561,41 @@ def add_user_skills_by_name():
         return jsonify({"message": "Missing JSON data"}), 400
 
     user_id = data.get('user_id')
-    skill_names = data.get('skill_names')
+    skill_name = data.get('skill_names')  # accettiamo solo una stringa ora
 
+    # Validazione parametri
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
-    if not skill_names or not isinstance(skill_names, list):
-        return jsonify({"message": "A list of skill names is required"}), 400
+    if not skill_name or not isinstance(skill_name, str):
+        return jsonify({"message": "A single skill name as string is required"}), 400
 
     try:
-        # 🔹 Ottieni gli ID delle skill dai nomi
-        format_strings = ','.join(['%s'] * len(skill_names))
-        mycursor.execute(f"SELECT skill_id, skill_name FROM Skill WHERE skill_name IN ({format_strings})", tuple(skill_names))
-        result = mycursor.fetchall()
+        # 🔹 Cerca la skill corrispondente
+        mycursor.execute("SELECT skill_id, skill_name FROM Skill WHERE skill_name = %s", (skill_name,))
+        result = mycursor.fetchone()
 
         if not result:
-            return jsonify({"message": "No matching skills found"}), 404
+            return jsonify({"message": f"Skill '{skill_name}' not found"}), 404
 
-        skill_map = {name: sid for sid, name in result}  # mappa nome -> id
-        # Filtra solo le skill esistenti
-        existing_skill_ids = list(skill_map.values())
+        skill_id = result[0]
 
-        # 🔹 Recupera le skill già associate all'utente
-        mycursor.execute("SELECT skill_id FROM User_skill WHERE user_id = %s", (user_id,))
-        already_linked = {row[0] for row in mycursor.fetchall()}
+        # 🔹 Controlla se la skill è già associata all'utente
+        mycursor.execute("SELECT 1 FROM User_skill WHERE user_id = %s AND skill_id = %s", (user_id, skill_id))
+        already_linked = mycursor.fetchone()
 
-        # 🔹 Filtra solo le nuove skill da inserire
-        new_skill_ids = [sid for sid in existing_skill_ids if sid not in already_linked]
+        if already_linked:
+            return jsonify({"message": f"Skill '{skill_name}' is already linked to user"}), 200
 
-        if not new_skill_ids:
-            return jsonify({"message": "All provided skills are already linked to the user"}), 200
-
-        # 🔹 Inserimento multiplo
-        values = [(user_id, sid) for sid in new_skill_ids]
-        mycursor.executemany("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", values)
+        # 🔹 Inserisci l'associazione
+        mycursor.execute("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", (user_id, skill_id))
         mydb.commit()
 
         return jsonify({
-            "message": "Skills added successfully",
-            "added_skills": [name for name in skill_names if name in skill_map and skill_map[name] in new_skill_ids]
+            "message": f"Skill '{skill_name}' added successfully to user {user_id}"
         }), 201
 
     except mysql.connector.Error as err:
-        print(f"Database error while adding skills: {err}")
+        print(f"Database error while adding skill: {err}")
         return jsonify({"message": f"Database error: {err}"}), 500
 
 

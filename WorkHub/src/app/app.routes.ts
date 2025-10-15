@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: 'signUp', component: Registrazione },
   { path: 'signIn', component: Login },
   { path: 'home', component: Home },
-  { path: 'users', component: UserComponent, canActivate: [AuthGuard] },
+  { path: 'users', component: UserComponent}, //canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard] },
   { path: 'info', component: PrivacyComponent },
   { path: 'profile', component: Profile}, //canActivate: [AuthGuard] },

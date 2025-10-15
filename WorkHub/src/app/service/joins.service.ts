@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjectCreationService {
-  private apiUrl = 'https://musical-lamp-x55jj9xxwg9j3vr4w-5000.app.github.dev/api'; // Base URL
+  private apiUrl = 'https://shiny-space-fiesta-7vvggrwwv9g939rg-5000.app.github.dev/api'; // Base URL
 
   constructor(private http: HttpClient) {}
 

@@ -43,7 +43,7 @@
                     <div class="email-edit">
                         @if (tAnnixp) {
                             <input type="number" placeholder="Inseerisci anni" #annixp>
-                            <button (click)="updateUser('country', annixp.value)">Aggiorna</button>
+                            <button (click)="updateUser('anni_di_esperienza', annixp.value)">Aggiorna</button>
                             <button class="editBtn" (click)="toggleAnniexp()">Chiudi</button>
                         } @else {
                             <button class="editBtn" (click)="toggleAnniexp()">Edit</button>
@@ -58,7 +58,7 @@
                     <div class="email-edit">
                         @if (tUser) {
                             <input type="text" placeholder="Nuovo username" #nuovaUser>
-                            <button (click)="updateUser('anni_di_esperienza', nuovaUser.value)">Aggiorna</button>
+                            <button (click)="updateUser('username', nuovaUser.value)">Aggiorna</button>
                             <button class="editBtn" (click)="toggleUsername()">Chiudi</button>
                         } @else {
                             <button class="editBtn" (click)="toggleUsername()">Edit</button>
@@ -103,9 +103,16 @@
         </div>
         <div class="info2">
             <div class="skillSet">
-                <h2>Skills</h2>
-                <p>JavaScript, TypeScript, C#, </p>
+                <h2>Skill</h2>
+                <select [(ngModel)]="Skill">
+                    <option value=""></option>
+                    @for (skill of skills; track skill) {
+                        <option [value]="skill">{{ skill }}</option>
+                    }
+                </select>
+                <p>Le tue skils: {{user?.skills}}</p>
             </div>
+            <button (click) = "addUserSkill('skill_names')">Aggiungi alle tue skill</button>
             <div class="progetti">
                 <h2>Progetti</h2>
                 <div class="prova"></div>

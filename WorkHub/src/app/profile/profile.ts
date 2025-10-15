@@ -24,6 +24,14 @@ export class Profile implements OnInit{
   tAnnixp: Boolean = false
   tPass: boolean = false
   showPassword: boolean = false
+  Skill: string = ""
+  skills: string[] = [
+    "HTML","CSS","JavaScript","SQL","Python","Project Management",
+    "Imbiancaggio","Idraulica","Marketing","Excel","Node.js",
+    "React","Photoshop","UX Design","DevOps","SQL Server",
+    "Docker","Content Writing","Carpentry","Testing"
+  ]
+
   constructor(private userService: UserService, private router: Router) {}
 
   
@@ -40,28 +48,53 @@ export class Profile implements OnInit{
     this.router.navigate(['/signIn']);
 
   }
+  addUserSkill(sn: string) {
+  if (!this.user?.user_id) {
+    console.error("User ID non disponibile");
+    return;
+  }
+
+  const data: any = {
+    user_id: this.user.user_id,
+    skill_names: this.Skill
+  };
+
+  this.userService.addUserSkills(data).subscribe({
+    next: (res) => {
+      console.log(res.message);
+      this.userService.getCurrentUser(this.user!.user_id);
+    },
+    error: (err) => {
+      console.error('Errore aggiornamento skill:', err);
+    }
+  });
+  }
+
 
   updateUser(campo: keyof User, valore: string) {
-    if (!this.user) return; // sicurezza
+  if (!this.user) return; // sicurezza
 
-    const payload: Partial<User> & { user_id: number } = {
-      user_id: this.user.user_id,
-      [campo]: valore
-    };
+  const payload: Partial<User> & { user_id: number } = {
+    user_id: this.user.user_id,
+    [campo]: valore
+  };
 
-    this.userService.updateUser(payload).subscribe({
-      next: (res) => {
-        console.log(res.message);
-        // Aggiorna subito il BehaviorSubject
-        const updatedUser = { ...this.user!, [campo]: valore };
-        this.userService.currentUser.next(updatedUser);
-        this.user = updatedUser; // aggiorna anche la variabile locale
-      },
-      error: (err) => {
-        console.error('Errore aggiornamento:', err);
-      }
-    });
-  }
+  this.userService.updateUser(payload).subscribe({
+    next: (res) => {
+      console.log(res.message);
+
+      // Ricarica l'utente aggiornato dal server e aggiorna BehaviorSubject e variabile locale
+      this.userService.getCurrentUser(this.user!.user_id);
+
+      // Non serve aggiornare manualmente this.user qui perché
+      // ngOnInit già sottoscrive currentUser e aggiornerà la variabile automaticamente
+    },
+    error: (err) => {
+      console.error('Errore aggiornamento:', err);
+    }
+  });
+}
+
 
   ngOnInit(): void {
     // ✅ Sottoscriviti al BehaviorSubject per ricevere i dati aggiornati
