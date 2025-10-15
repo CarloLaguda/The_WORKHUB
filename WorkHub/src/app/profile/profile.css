@@ -9,7 +9,7 @@
 }
 
 .center{
-    border: green solid;
+    /*border: green solid;*/
     width: 60vw;
     height: 80vh;
     display: flex;
@@ -17,7 +17,7 @@
 }
 
 .info, .info2{
-    border: blue solid;
+    /*border: blue solid;*/
     flex-grow: 1;
 }
 
@@ -55,7 +55,7 @@
     margin-top: 10px;
 }
 
-.basicInfo{
+.basicInfo, .otherInfo, .statusInfo{
     padding: 20px;
     width: 40%;
 }
@@ -69,12 +69,21 @@
     padding: 20px;
 }
 
-.otherInfo{
-    padding: 20px;
-    width: 40%;
+.editInfo{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.editBtn{
+    height: min-content;
 }
 
 h1, h3{
     margin: 0px;
     width: fit-content;
+}
+
+h4{
+    margin: 5px;
 }

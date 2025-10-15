@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://automatic-fortnight-977ppqww9r67hxgg4-5000.app.github.dev/api/users'; // URL della tua API
+  private apiUrl = 'https://opulent-spork-wrrww9x6p7493557w-5000.app.github.dev/api/users'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 

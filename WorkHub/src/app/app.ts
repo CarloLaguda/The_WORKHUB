@@ -32,7 +32,7 @@ export class App {
   
    errore: string = ""
   
-  url: string = "https://legendary-potato-v66xxgw49pxpfwxwj-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
+  url: string = "https://opulent-spork-wrrww9x6p7493557w-5000.app.github.dev/" // LINK AL SERVER (DA CAMBIARE OGNI VOLTA)
   
  
   constructor(public http: HttpClient, public router: Router){}//CONSTRUCTOR

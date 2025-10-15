@@ -4,15 +4,30 @@
             <div class="basicInfo">
                 <div class="profileImage"></div>
                 <h1>{{user?.first_name}} {{user?.last_name}}</h1>
-                <h3>BlueSaturn</h3>
+                <h3>{{user?.username}}</h3>
             </div>
             <div class="separation"></div>
             <div class="otherInfo">
-                <h4>Country: Italy</h4>
-                <h4>Age: 18</h4>
-                <h4>Sex: Male</h4>
+                <div class="editInfo">
+                    <h4>Country: {{user?.country}}</h4>
+                    <button class="editBtn">Edit</button>
+                </div>
+                <div class="editInfo">
+                    <h4>Age: {{user?.eta}}</h4>
+                    <button class="editBtn">Edit</button>
+                </div>
+                <div class="editInfo">
+                    <h4>Sex: {{user?.gender}}</h4>
+                    <button class="editBtn">Edit</button>
+                </div>
             </div>
             <div class="separation"></div>
+            <div class="statusInfo">
+                <div class="editInfo">
+                    <h3>Status: {{user?.status}}</h3>
+                    <button class="editBtn">Edit</button>
+                </div>
+            </div>
         </div>
         <div class="info2">
             <div class="skillSet">
