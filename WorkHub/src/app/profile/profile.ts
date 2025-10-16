@@ -1,19 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../models/user.model';
 import { UserService } from '../service/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ThisReceiver } from '@angular/compiler';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProjectService } from '../service/project.service';
+import { Project } from '../models/project.model';
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit{
 
   utente!: User
+  progetti: Project[] = []
   selectedStatus: string = '';
 
   user: User | null = null;
@@ -32,7 +35,7 @@ export class Profile implements OnInit{
     "Docker","Content Writing","Carpentry","Testing"
   ]
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router, private projectService: ProjectService) {}
 
   
   toggleUsername(){this.tUser = !this.tUser}
@@ -101,7 +104,15 @@ export class Profile implements OnInit{
     this.userService.getCurrentUserObservable().subscribe({
       next: (u) => {
         this.user = u;
-        console.log('👤 Profilo caricato:', u);
+       if (u && u.user_id) {
+        this.projectService.getUserProjects(u.user_id).subscribe({
+          next: (projects) => {
+            this.progetti = projects
+            console.log('✅ Progetti trovati:', projects);
+          },
+          error: (err) => console.error('Errore nel caricamento progetti:', err)
+        });
+      }
       }
     });
   }

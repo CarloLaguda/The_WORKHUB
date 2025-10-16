@@ -1,17 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 import { UserService } from '../service/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-user-component',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './user-component.html',
   styleUrl: './user-component.css'
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
+  user: User | null = null; // 👈 Utente loggato
+
   Users!: Observable<User[]>;
   expandedUserId: number | null = null;
 
@@ -34,10 +37,6 @@ export class UserComponent {
 
   constructor(private userService: UserService) {}
 
-  ngOnInit(): void {
-    this.Users = this.userService.getAllUsers();
-  }
-
   toggleDetails(userId: number) {
     this.expandedUserId = this.expandedUserId === userId ? null : userId;
   }
@@ -50,10 +49,19 @@ export class UserComponent {
         this.filterCountry
       );
   }
-    clearFilters() {
-      this.filterAge = 0;
-      this.filterSkill = '';
-      this.filterCountry = '';
-      this.Users = this.userService.getAllUsers();
-    }
+  clearFilters() {
+    this.filterAge = 0;
+    this.filterSkill = '';
+    this.filterCountry = '';
+    this.Users = this.userService.getAllUsers();
+  }
+
+  ngOnInit(): void {
+    this.Users = this.userService.getAllUsers();
+    this.userService.getCurrentUserObservable().subscribe({
+      next: (u) => {
+        this.user = u;
+      }
+    });
+  }
 }

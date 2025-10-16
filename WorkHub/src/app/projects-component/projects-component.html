@@ -21,7 +21,12 @@
   <button (click)="applyProjectFilters()">Filtra progetti</button>
   <button (click)="clearProjectFilters()">Reset progetti</button>
 </div>
-
+<div>
+  <div> Nome Utente {{user?.first_name}} {{user?.last_name}}</div>
+  <div>Torna alla tua pagina privata
+    <button routerLink="/profile">Profilo</button>
+  </div>
+</div>
 <hr />
 
 <!-- 🔹 Lista progetti filtrata -->
@@ -33,7 +38,7 @@
           <h1>{{ pro.title }}</h1>
           <p>Numero di persone: {{ pro.user_count }}</p>
           @if(!pro.is_full){
-            <button>Unisciti al Proggetto</button>
+            <button (click) = "add_userProject(pro.project_id)">Unisciti al Proggetto</button>
           }
           <!-- Toggle dettagli progetto -->
           <button (click)="toggleProjectDetails(pro.project_id)">
@@ -54,3 +59,23 @@
 }@else {
   <p>Caricamento in corso...</p>
 }
+
+<div class="popup-overlay"
+     *ngIf="popupVisible && popupType === 'success'">
+  <div class="popup" (click)="$event.stopPropagation()">
+    <h2>✅Ti sei unito ad un progetto</h2>
+    <p>{{popupMessage}}</p>
+    <button (click)="closePopup()" routerLink="/profile">Close</button>
+  </div>
+</div>
+
+<!-- ❌ POPUP ERRORE -->
+<div class="popup-overlay"
+     *ngIf="popupVisible && popupType === 'error'"
+     (click)="closePopup()">
+  <div class="popup" (click)="$event.stopPropagation()">
+    <h2>⚠️Non sei riuscito ad unirti ad un progetto</h2>
+    <p>{{ popupMessage }}</p>
+    <button (click)="closePopup()">Close</button>
+  </div>
+</div>

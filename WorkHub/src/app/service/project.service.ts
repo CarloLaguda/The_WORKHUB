@@ -7,12 +7,12 @@ import { Project } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://shiny-space-fiesta-7vvggrwwv9g939rg-5000.app.github.dev/api/projects_details'; // URL della tua API
+  private apiUrl = 'https://symmetrical-garbanzo-7vww5xvq67qhpv4x-5000.app.github.dev/'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 
   getAllProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(this.apiUrl);
+    return this.http.get<Project[]>(this.apiUrl+ 'api/projects_details');
   }
 
   getFilteredProjects(skill?: string, availability?: string): Observable<Project[]> {
@@ -25,7 +25,7 @@ export class ProjectService {
       params = params.set('availability', availability);
     }
 
-    return this.http.get<Project[]>(this.apiUrl, { params });
+    return this.http.get<Project[]>(this.apiUrl+ 'api/projects_details', { params });
   }
 
   createProject(
@@ -48,7 +48,13 @@ export class ProjectService {
 
   joinUserToProject(projectId: number, userId: number, isCreator: number): Observable<any> {
     const body = { project_id: projectId, user_id: userId, is_creator: isCreator };
-    return this.http.post(`${this.apiUrl}/join_user_projects`, body);
+    return this.http.post(`${this.apiUrl}api/join_user_projects`, body);
   }
+
+  getUserProjects(user_id: number): Observable<Project[]> {
+    const params = new HttpParams().set('user_id', user_id);
+    return this.http.get<Project[]>(`${this.apiUrl}api/user_projects`, { params });
+  }
+
 }
 

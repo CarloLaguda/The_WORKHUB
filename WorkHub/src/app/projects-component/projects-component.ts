@@ -4,16 +4,22 @@ import { Observable } from 'rxjs';
 import { ProjectService } from '../service/project.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { User } from '../models/user.model';
+import { UserService } from '../service/user.service';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-projects-component',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './projects-component.html',
   styleUrl: './projects-component.css'
 })
 export class ProjectsComponent {
   projects!: Observable<Project[]>; // il simbolo $ indica che è un Observable
-
-  constructor(private projectService: ProjectService) {}
+  user: User | null = null
+  popupType: 'success' | 'error' = 'success';
+  popupVisible: boolean = false;
+  popupMessage: string = '';
+  constructor(private projectService: ProjectService, private userService: UserService) {}
 
   skillsList: string[] = [
     "HTML","CSS","JavaScript","SQL","Python","Project Management",
@@ -49,8 +55,46 @@ export class ProjectsComponent {
     this.projects = this.projectService.getAllProjects();
   }
 
+  add_userProject(project_id: number)
+  {
+    console.log("ciao")
+    if(this.user && this.user.user_id !== undefined) {
+      console.log("ciao")
+      this.projectService.joinUserToProject(project_id, this.user.user_id, 0).subscribe({
+        next: (response) => {
+          console.log("Unione al progetto riuscita!", response);
+          // Aggiungi qui la logica di aggiornamento UI (es. ricarica progetti, notifica successo)
+          alert('Ti sei unito al progetto con successo!');
+        },
+        error: (error) => {
+          // Codice eseguito in caso di errore HTTP (es. 404, 400, 500)
+          console.error("Errore durante l'unione al progetto:", error);
+          
+          // Estrai il messaggio di errore dal backend se disponibile
+          const errorMessage = error.error?.message || 'Si è verificato un errore sconosciuto.';
+          alert(`Impossibile unirsi al progetto: ${errorMessage}`);
+        }
+    })
+   }
+  }
+
+  showPopup(message: string, type: 'success' | 'error') {
+    this.popupMessage = message;
+    this.popupType = type;
+    this.popupVisible = true;
+  }
+
+  closePopup() {
+    this.popupVisible = false;
+  }
+
   ngOnInit(): void {
     this.projects = this.projectService.getAllProjects();
+    this.userService.getCurrentUserObservable().subscribe({
+      next: (u) => {
+        this.user = u;
+      }
+    });
     console.log(this.projects)
   }
     

@@ -28,12 +28,19 @@
   <button (click)="clearFilters()">Reset</button>
 </div>
 
+<div>
+  <div> Nome Utente {{user?.first_name}} {{user?.last_name}}</div>
+  <div>Torna alla tua pagina privata
+    <button routerLink="/profile">Profilo</button>
+  </div>
+</div>
 <hr />
 
 @if (Users | async; as Users) {
   <div>
     @for (u of Users; track u.user_id) {
-      <div class="user-card">
+      @if(u.user_id != user?.user_id){
+        <div class="user-card">
         <p><b>{{ u.first_name }} {{ u.last_name }}</b></p>
         <p>Età: {{ u.eta }}</p>
 
@@ -53,6 +60,8 @@
         }
       </div>
       <br>
+      }
+      
     }
   </div>
 } @else {

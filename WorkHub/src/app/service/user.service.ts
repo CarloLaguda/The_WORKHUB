@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://shiny-space-fiesta-7vvggrwwv9g939rg-5000.app.github.dev/'; // URL della tua API
+  private apiUrl = 'https://symmetrical-garbanzo-7vww5xvq67qhpv4x-5000.app.github.dev/'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 
@@ -60,5 +60,7 @@ export class UserService {
   addUserSkills(data: Partial<User> & { user_id: number }) {
     return this.http.post<{ message: string }>(this.apiUrl + "api/add_user_skills_by_name", data);
   }
+
+  
 
 }

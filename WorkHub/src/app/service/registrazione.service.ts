@@ -8,7 +8,7 @@ import { Register } from '../models/register.model';
 })
 export class RegistrationService {
 
-  private baseUrl: string = "https://shiny-space-fiesta-7vvggrwwv9g939rg-5000.app.github.dev/api";
+  private baseUrl: string = "https://symmetrical-garbanzo-7vww5xvq67qhpv4x-5000.app.github.dev/api";
 
   constructor(private http: HttpClient) { }
 

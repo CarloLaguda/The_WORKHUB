@@ -279,7 +279,7 @@ def join_project():
         mycursor.execute("""
             INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
             VALUES (%s, %s, %s, %s)
-        """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), is_creator))
+        """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d'), is_creator))
         
         mydb.commit()
         return jsonify({"message": "User successfully joined the project"}), 200

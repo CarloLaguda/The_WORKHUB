@@ -8,6 +8,7 @@ import { PrivacyComponent } from './privacy-component/privacy-component';
 import { Profile } from './profile/profile';
 
 import { AuthGuard } from './service/auth-guard/auth-guard';  // percorso corretto
+import { CreateProject } from './create-project/create-project';
 
 export const routes: Routes = [
   { path: 'signUp', component: Registrazione },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard] },
   { path: 'info', component: PrivacyComponent },
   { path: 'profile', component: Profile}, //canActivate: [AuthGuard] },
+  { path: 'createProject', component: CreateProject},
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
