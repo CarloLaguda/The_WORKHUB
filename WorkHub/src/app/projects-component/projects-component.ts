@@ -64,12 +64,12 @@ export class ProjectsComponent {
         next: (response) => {
           console.log("Unione al progetto riuscita!", response);
           // Aggiungi qui la logica di aggiornamento UI (es. ricarica progetti, notifica successo)
-          alert('Ti sei unito al progetto con successo!');
+          this.showPopup('✅ Ti sei unito con successo!', 'success')
         },
         error: (error) => {
           // Codice eseguito in caso di errore HTTP (es. 404, 400, 500)
           console.error("Errore durante l'unione al progetto:", error);
-          
+          this.showPopup('❌ Errore durante lunione al progetto', 'error')
           // Estrai il messaggio di errore dal backend se disponibile
           const errorMessage = error.error?.message || 'Si è verificato un errore sconosciuto.';
           alert(`Impossibile unirsi al progetto: ${errorMessage}`);

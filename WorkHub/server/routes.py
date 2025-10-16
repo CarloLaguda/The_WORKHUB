@@ -257,7 +257,7 @@ def create_project():
         return jsonify({"message": f"Error: {err}"}), 400
 
 
-#LEGARE UN UTENTE AD UN PROGETTO
+# LEGARE UN UTENTE AD UN PROGETTO E AGGIORNARE STATUS
 @app.route('/api/join_user_projects', methods=['POST'])
 def join_project():
     data = request.get_json()
@@ -266,26 +266,58 @@ def join_project():
     is_creator = data.get('is_creator', 0)  # Default 0 se non specificato
     
     try:
-        # Controlla se il progetto è pieno
+        # Recupera informazioni sul progetto
         mycursor.execute("""
-            SELECT is_full FROM Project WHERE project_id = %s
+            SELECT max_persone, is_full FROM Project WHERE project_id = %s
         """, (project_id,))
         project = mycursor.fetchone()
         
-        if project and project[0]:
+        if not project:
+            return jsonify({"message": "Project not found"}), 404
+        
+        max_persone, is_full = project
+        
+        if is_full:
             return jsonify({"message": "Project is full"}), 400
         
-        # Inserisco l'utente nel progetto
+        # Controlla se l'utente è già nel progetto
+        mycursor.execute("""
+            SELECT 1 FROM Project_user WHERE project_id = %s AND user_id = %s
+        """, (project_id, user_id))
+        if mycursor.fetchone():
+            return jsonify({"message": "User already joined this project"}), 200
+        
+        # Inserisci l'utente nel progetto
         mycursor.execute("""
             INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
             VALUES (%s, %s, %s, %s)
         """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d'), is_creator))
         
+        # Conta quanti utenti ci sono ora nel progetto
+        mycursor.execute("""
+            SELECT COUNT(*) FROM Project_user WHERE project_id = %s
+        """, (project_id,))
+        current_count = mycursor.fetchone()[0]
+        
+        # Aggiorna is_full e availability se necessario
+        new_is_full = 1 if current_count >= max_persone else 0
+        new_availability = 'full' if new_is_full else 'open'
+        
+        mycursor.execute("""
+            UPDATE Project SET is_full = %s, availability = %s WHERE project_id = %s
+        """, (new_is_full, new_availability, project_id))
+        
         mydb.commit()
-        return jsonify({"message": "User successfully joined the project"}), 200
+        return jsonify({
+            "message": "User successfully joined the project",
+            "current_users": current_count,
+            "is_full": new_is_full,
+            "availability": new_availability
+        }), 200
         
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
+
     
 #LEGARE SKILL A USER
 @app.route('/api/join_projects_skill', methods=['POST'])

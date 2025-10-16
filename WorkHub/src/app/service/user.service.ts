@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://symmetrical-garbanzo-7vww5xvq67qhpv4x-5000.app.github.dev/'; // URL della tua API
+  private apiUrl = 'https://automatic-waffle-jjjxx4995v4xh5w99-5000.app.github.dev/'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 
@@ -21,7 +21,6 @@ export class UserService {
     return this.http.get<User>(`${this.apiUrl}/api/users?user_id=${id_user}`).subscribe({
       next: (user) => {
         this.currentUser.next(user); // ✅ aggiorna il BehaviorSubject
-        console.log(this.currentUser)
       },
       error: (err) => {
         console.error('Errore durante il recupero utente:', err);
