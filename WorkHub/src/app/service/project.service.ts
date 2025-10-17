@@ -7,7 +7,7 @@ import { Project } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://automatic-waffle-jjjxx4995v4xh5w99-5000.app.github.dev/'; // URL della tua API
+  private apiUrl = 'https://super-fortnight-x55jj9xx5wx926pqj-5000.app.github.dev/'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 

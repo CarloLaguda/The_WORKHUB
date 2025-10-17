@@ -8,7 +8,7 @@ import { Register } from '../models/register.model';
 })
 export class RegistrationService {
 
-  private baseUrl: string = "https://automatic-waffle-jjjxx4995v4xh5w99-5000.app.github.dev/api";
+  private baseUrl: string = "https://super-fortnight-x55jj9xx5wx926pqj-5000.app.github.dev/api";
 
   constructor(private http: HttpClient) { }
 

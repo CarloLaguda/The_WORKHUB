@@ -55,34 +55,34 @@ export class ProjectsComponent {
     this.projects = this.projectService.getAllProjects();
   }
 
-  add_userProject(project_id: number)
-  {
-    console.log("ciao")
-    if(this.user && this.user.user_id !== undefined) {
-      console.log("ciao")
+  add_userProject(project_id: number): void {
+    if (this.user && this.user.user_id !== undefined) {
       this.projectService.joinUserToProject(project_id, this.user.user_id, 0).subscribe({
         next: (response) => {
-          console.log("Unione al progetto riuscita!", response);
-          // Aggiungi qui la logica di aggiornamento UI (es. ricarica progetti, notifica successo)
-          this.showPopup('✅ Ti sei unito con successo!', 'success')
+          console.log("✅ Unione al progetto riuscita!", response);
+          // Mostra popup di successo con il messaggio del backend
+          this.showPopup('success', response.message || 'Ti sei unito con successo al progetto!');
         },
         error: (error) => {
-          // Codice eseguito in caso di errore HTTP (es. 404, 400, 500)
-          console.error("Errore durante l'unione al progetto:", error);
-          this.showPopup('❌ Errore durante lunione al progetto', 'error')
-          // Estrai il messaggio di errore dal backend se disponibile
+          console.error("❌ Errore durante l'unione al progetto:", error);
+          // Mostra popup di errore con il messaggio dal backend
           const errorMessage = error.error?.message || 'Si è verificato un errore sconosciuto.';
-          alert(`Impossibile unirsi al progetto: ${errorMessage}`);
+          this.showPopup('error', errorMessage);
         }
-    })
-   }
+      });
+    }
   }
 
-  showPopup(message: string, type: 'success' | 'error') {
-    this.popupMessage = message;
-    this.popupType = type;
-    this.popupVisible = true;
-  }
+showPopup(type: 'success' | 'error', message: string): void {
+  this.popupType = type;
+  this.popupMessage = message;
+  this.popupVisible = true;
+
+  // Chiudi automaticamente dopo 3 secondi
+  setTimeout(() => {
+    this.popupVisible = false;
+  }, 3000);
+}
 
   closePopup() {
     this.popupVisible = false;

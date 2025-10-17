@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://automatic-waffle-jjjxx4995v4xh5w99-5000.app.github.dev/'; // URL della tua API
+  private apiUrl = 'https://super-fortnight-x55jj9xx5wx926pqj-5000.app.github.dev/'; // URL della tua API
   public currentUser = new BehaviorSubject<User | null>(null);
   constructor(private http: HttpClient) {}
 

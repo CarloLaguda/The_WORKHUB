@@ -48,6 +48,22 @@
   background: #2a4365;
 }
 
+/* --- OVERLAY FULLSCREEN --- */
+.popup-overlay {
+  position: fixed;              /* Rimane sopra tutto */
+  top: 0;
+  left: 0;
+  width: 100vw;                 /* Copre tutto lo schermo */
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8); /* Sfondo scuro trasparente */
+  display: flex;                /* Centra il contenuto */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;                /* Sopra ogni altro elemento */
+  animation: fadeIn 0.3s ease;
+}
+
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

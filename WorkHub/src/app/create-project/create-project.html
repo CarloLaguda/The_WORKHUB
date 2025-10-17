@@ -1,1 +1,62 @@
-<p>create-project works!</p>
+<div class="filters-projects">
+  <label>
+    Skill richiesta:
+    <!--
+    <select [(ngModel)]="filterProjectSkill">
+      <option value="">-- Tutte le skill --</option>
+      @for (skill of skillsList; track skill) {
+        <option [value]="skill">{{ skill }}</option>
+      }
+    </select>
+    -->
+  </label>
+
+  <label>
+    Disponibilità:
+    <!--
+    <select [(ngModel)]="filterProjectAvailability">
+       
+      <option value="">-- Tutte --</option>
+      <option value="open">Open</option>
+      <option value="full">Full</option>
+    </select>
+     -->
+  </label>
+
+  <!--
+  <button (click)="applyProjectFilters()">Filtra progetti</button>
+  <button (click)="clearProjectFilters()">Reset</button>
+  -->
+</div>
+
+<!-- 🔹 Info utente loggato -->
+<div class="user-header">
+  <div>
+    <strong>Utente loggato:</strong>
+  </div>
+  <div>
+    <button routerLink="/profile">Torna al profilo</button>
+  </div>
+</div>
+
+<hr />
+
+
+<!-- ✅ POPUP SUCCESSO 
+<div class="popup-overlay" *ngIf="popupVisible && popupType === 'success'">
+  <div class="popup">
+    <h2>✅ Successo</h2>
+    <p>{{ popupMessage }}</p>
+    <button (click)="closePopup()">Chiudi</button>
+  </div>
+</div>
+
+❌ POPUP ERRORE 
+<div class="popup-overlay" *ngIf="popupVisible && popupType === 'error'">
+  <div class="popup">
+    <h2>⚠️ Errore</h2>
+    <p>{{ popupMessage }}</p>
+    <button (click)="closePopup()">Chiudi</button>
+  </div>
+</div>
+-->

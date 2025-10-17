@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjectCreationService {
-  private apiUrl = 'https://automatic-waffle-jjjxx4995v4xh5w99-5000.app.github.dev/api'; // Base URL
+  private apiUrl = 'https://super-fortnight-x55jj9xx5wx926pqj-5000.app.github.dev/api'; // Base URL
 
   constructor(private http: HttpClient) {}
 
