@@ -223,35 +223,29 @@ def create_project():
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
-    availability = data.get('availability')  # esempio: 'open' o 'full'
+    availability = data.get('availability', 'open')  # 👈 default open
     max_persone = data.get('max_persone')
     creator_user_id = data.get('creator_user_id')
 
-    # Validazione minima (puoi ampliarla)
-    if not all([title, description, availability, max_persone, creator_user_id]):
+    if not all([title, description, max_persone, creator_user_id]):
         return jsonify({"message": "Missing required fields"}), 400
 
     try:
-        # Inserisco il progetto
         mycursor.execute("""
             INSERT INTO Project (title, description, availability, max_persone, is_full)
             VALUES (%s, %s, %s, %s, %s)
         """, (title, description, availability, max_persone, 1 if availability == 'full' else 0))
-
         mydb.commit()
 
-        # Prendo l'id del progetto appena creato
         project_id = mycursor.lastrowid
 
-        # Inserisco la relazione creatore
         mycursor.execute("""
             INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
             VALUES (%s, %s, %s, %s)
         """, (project_id, creator_user_id, datetime.now().strftime('%Y-%m-%d'), 1))
-
         mydb.commit()
 
-        return jsonify({"message": "Project created and creator linked", "project_id": project_id}), 201
+        return jsonify({"message": "Project created successfully", "project_id": project_id}), 201
 
     except mysql.connector.Error as err:
         return jsonify({"message": f"Error: {err}"}), 400
@@ -319,7 +313,7 @@ def join_project():
         return jsonify({"message": f"Error: {err}"}), 400
 
     
-#LEGARE SKILL A USER
+#LEGARE SKILL A PROJECT
 @app.route('/api/join_projects_skill', methods=['POST'])
 def add_skill_to_project():
     data = request.get_json()

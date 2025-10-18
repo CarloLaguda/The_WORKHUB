@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectCreationService {
-  private apiUrl = 'https://super-fortnight-x55jj9xx5wx926pqj-5000.app.github.dev/api'; // Base URL
+export class ProjectJoinService{
+  private apiUrl = 'https://turbo-computing-machine-wrrww9xxr7jwc5wpp-5000.app.github.dev/api'; // Base URL
 
   constructor(private http: HttpClient) {}
 

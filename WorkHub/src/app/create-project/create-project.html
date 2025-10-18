@@ -1,62 +1,62 @@
-<div class="filters-projects">
-  <label>
-    Skill richiesta:
-    <!--
-    <select [(ngModel)]="filterProjectSkill">
-      <option value="">-- Tutte le skill --</option>
-      @for (skill of skillsList; track skill) {
-        <option [value]="skill">{{ skill }}</option>
-      }
-    </select>
-    -->
-  </label>
-
-  <label>
-    Disponibilità:
-    <!--
-    <select [(ngModel)]="filterProjectAvailability">
-       
-      <option value="">-- Tutte --</option>
-      <option value="open">Open</option>
-      <option value="full">Full</option>
-    </select>
-     -->
-  </label>
-
-  <!--
-  <button (click)="applyProjectFilters()">Filtra progetti</button>
-  <button (click)="clearProjectFilters()">Reset</button>
-  -->
-</div>
-
-<!-- 🔹 Info utente loggato -->
 <div class="user-header">
-  <div>
-    <strong>Utente loggato:</strong>
-  </div>
-  <div>
-    <button routerLink="/profile">Torna al profilo</button>
-  </div>
+  <div><strong>Utente loggato:</strong> {{ user?.first_name }}</div>
+  <div><button routerLink="/profile">Torna al profilo</button></div>
 </div>
 
-<hr />
+<hr>
 
+<label>
+  Nome Progetto:
+  <input type="text" placeholder="Nome progetto" #title>
+</label>
+<br>
 
-<!-- ✅ POPUP SUCCESSO 
-<div class="popup-overlay" *ngIf="popupVisible && popupType === 'success'">
-  <div class="popup">
-    <h2>✅ Successo</h2>
+<label>
+  Descrizione:
+  <textarea placeholder="Descrizione progetto" #description></textarea>
+</label>
+<br>
+
+<label>
+  Numero massimo di persone:
+  <input type="number" #maxPersone>
+</label>
+
+<hr>
+
+<!-- 🔹 Skill multiple -->
+<h3>Seleziona Skill</h3>
+<div class="multi-select">
+  @for (skill of skillsList; track skill) {
+    <label>
+      <input type="checkbox" [checked]="selectedSkills.includes(skill)" (change)="toggleSkill(skill)">
+      {{ skill }}
+    </label>
+  }
+</div>
+
+<!-- 🔹 Ambiti multipli -->
+<h3>Seleziona Ambiti</h3>
+<div class="multi-select">
+  @for (env of envList; track env) {
+    <label>
+      <input type="checkbox" [checked]="selectedEnvs.includes(env)" (change)="toggleEnv(env)">
+      {{ env }}
+    </label>
+  }
+</div>
+
+<hr>
+
+<button (click)="createProject(title.value, description.value, maxPersone.valueAsNumber)">
+  Crea progetto
+</button>
+
+<div class="popup-overlay" *ngIf="popupVisible">
+  <div class="popup" [ngClass]="popupType">
+    <h2>{{ popupType === 'success' ? '✅ Successo' : '⚠️ Errore' }}</h2>
     <p>{{ popupMessage }}</p>
     <button (click)="closePopup()">Chiudi</button>
   </div>
 </div>
 
-❌ POPUP ERRORE 
-<div class="popup-overlay" *ngIf="popupVisible && popupType === 'error'">
-  <div class="popup">
-    <h2>⚠️ Errore</h2>
-    <p>{{ popupMessage }}</p>
-    <button (click)="closePopup()">Chiudi</button>
-  </div>
-</div>
--->
