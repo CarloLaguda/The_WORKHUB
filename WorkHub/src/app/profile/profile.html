@@ -138,3 +138,11 @@
         </div>
     </div>
 </div>
+
+<div class="popup-overlay" *ngIf="popupVisible">
+  <div class="popup" [ngClass]="popupType">
+    <h2>{{ popupType === 'success' ? '✅ Successo' : '⚠️ Errore' }}</h2>
+    <p>{{ popupMessage }}</p>
+    <button (click)="closePopup()">Chiudi</button>
+  </div>
+</div>

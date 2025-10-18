@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'https://turbo-computing-machine-wrrww9xxr7jwc5wpp-5000.app.github.dev/api/login';
+  private apiUrl = 'https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 

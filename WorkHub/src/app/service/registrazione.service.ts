@@ -8,7 +8,7 @@ import { Register } from '../models/register.model';
 })
 export class RegistrationService {
 
-  private baseUrl: string = "https://turbo-computing-machine-wrrww9xxr7jwc5wpp-5000.app.github.dev/api";
+  private baseUrl: string = "https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/api";
 
   constructor(private http: HttpClient) { }
 

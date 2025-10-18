@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjectJoinService{
-  private apiUrl = 'https://turbo-computing-machine-wrrww9xxr7jwc5wpp-5000.app.github.dev/api'; // Base URL
+  private apiUrl = 'https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/api'; // Base URL
 
   constructor(private http: HttpClient) {}
 

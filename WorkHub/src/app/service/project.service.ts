@@ -7,7 +7,7 @@ import { Project } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://turbo-computing-machine-wrrww9xxr7jwc5wpp-5000.app.github.dev/'; // URL della tua API
+  private apiUrl = 'https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 
@@ -43,7 +43,7 @@ export class ProjectService {
       creator_user_id: creatorUserId
     };
 
-    return this.http.post<Project>(`${this.apiUrl}/create_projects`, body);
+    return this.http.post<Project>(`${this.apiUrl}api/create_projects`, body);
   }
 
   joinUserToProject(projectId: number, userId: number, isCreator: number): Observable<any> {
