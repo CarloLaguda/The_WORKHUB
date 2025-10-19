@@ -1,28 +1,38 @@
-#IMPORTO LIBRERIE NECESSARIE
+# IMPORTO LIBRERIE NECESSARIE
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import hashlib
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+import pandas as pd
+
+# CARICO LE VARIABILI DALL'ENV
+load_dotenv("/workspaces/The_WORKHUB/.env")  # or just load_dotenv() if .env is in the same folder
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_USER = os.getenv("DB_USER", "vscode")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_NAME = os.getenv("DB_NAME", "WorkHubDB")
 
 app = Flask(__name__)
 CORS(app)
 
-mydb = None
-mycursor = None
-
-#CONNESIONE A DB
+# CONNESSIONE AL DB
 try:
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="vscode",
-        password="",
-        database="WorkHubDB"
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
     mycursor = mydb.cursor()
-    print("Connessione al database MySQL stabilita con successo!")
+    print("✅ Connessione al database MySQL stabilita con successo!")
 except mysql.connector.Error as err:
-    print(f"⚠️ Error connecting to MariaDB: {err}")
+    mydb = None
+    mycursor = None
+    print(f"⚠️ Errore nella connessione al database: {err}")
 
 
 #ROTTA PER REGISTRAZIONE UTENTI
