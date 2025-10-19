@@ -1,4 +1,4 @@
-export class Login { //CLASSE PER LA LOGIN
+export class Login { //Modello di dati per la login
   constructor(
     public username: string,
     public password: string

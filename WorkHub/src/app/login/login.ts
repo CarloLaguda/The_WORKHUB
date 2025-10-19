@@ -12,22 +12,21 @@ import { UserService } from '../service/user.service';
 })
 export class Login implements OnInit, OnDestroy {
 
-  @ViewChild('loginBtn') loginBtn!: ElementRef<HTMLButtonElement>;
-
-  showPassword: boolean = false;
+  showPassword: boolean = false;//Toggle password
+  //POPUP variable
   popupVisible: boolean = false;
   popupMessage: string = '';
   popupType: 'success' | 'error' = 'success';
-
+  //SERVICE PER FARE LE CHIAMATE HTTP
   constructor(private loginService: LoginService, private userService: UserService) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
-
+  //StartLogin
   login_start(username: HTMLInputElement, password: HTMLInputElement) {
     if (!username.value || !password.value) {
-      this.showPopup('⚠️ Inserisci username/email e password', 'error');
+      this.showPopup('⚠️ Insert credential to login', 'error');
       return;
     }
 
@@ -39,7 +38,7 @@ export class Login implements OnInit, OnDestroy {
     this.loginService.login(data).subscribe({
       next: (res) => {
         if (res.message === 'Login successful') {
-          this.showPopup('✅ Login effettuato con successo!', 'success');
+          this.showPopup('✅ Login Succesfully done', 'success');
           
           // reset campi solo in caso di successo
           username.value = '';
@@ -48,16 +47,15 @@ export class Login implements OnInit, OnDestroy {
           // salvi user_id (opzionale)
           if (res.user_id) {
             this.userService.getCurrentUser(res.user_id)
-            localStorage.setItem('user_id', res.user_id.toString());
+            localStorage.setItem('user_id', res.user_id.toString()); //Salvo user nel local storage
           }
 
         } else {
-          this.showPopup('❌ Credenziali non valide', 'error');
+          this.showPopup('❌ Invalid credential', 'error');
         }
       },
       error: (err) => {
-        console.error('Errore login:', err);
-        const msg = err.error?.message || 'Errore durante il login';
+        const msg = err.error?.message || 'Error during the login';
         this.showPopup(`❌ ${msg}`, 'error');
       }
     });

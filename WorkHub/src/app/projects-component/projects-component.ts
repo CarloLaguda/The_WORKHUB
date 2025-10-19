@@ -13,14 +13,17 @@ import { RouterLink } from '@angular/router';
   templateUrl: './projects-component.html',
   styleUrl: './projects-component.css'
 })
-export class ProjectsComponent {
-  projects!: Observable<Project[]>; // il simbolo $ indica che è un Observable
-  user: User | null = null
+export class ProjectsComponent 
+{
+  projects!: Observable<Project[]>; //Lista progetti
+  user: User | null = null //User Loggato
+  //POPUP
   popupType: 'success' | 'error' = 'success';
   popupVisible: boolean = false;
   popupMessage: string = '';
-  constructor(private projectService: ProjectService, private userService: UserService) {}
 
+  constructor(private projectService: ProjectService, private userService: UserService) {}
+  //Skill list per filti
   skillsList: string[] = [
     "HTML","CSS","JavaScript","SQL","Python","Project Management",
     "Imbiancaggio","Idraulica","Marketing","Excel","Node.js",
@@ -28,13 +31,17 @@ export class ProjectsComponent {
     "Docker","Content Writing","Carpentry","Testing"
   ];
 
+  envList: string[] = [
+    'Web Development','Database','Marketing','Edilizia','Design','IT Operations','Content','QA','HR','Security'
+  ];
+
   filterProjectSkill?: string;
   filterProjectAvailability?: string;
-
-  // Toggle dettagli progetto
+  filterProjectEnv?: string
+  //Toggle dettagli progetto
   expandedProjectId: number | null = null;
-
-  toggleProjectDetails(id: number) {
+  toggleProjectDetails(id: number)
+  {
     if (this.expandedProjectId === id) {
       this.expandedProjectId = null;
     } else {
@@ -43,59 +50,61 @@ export class ProjectsComponent {
   }
 
   // Filtri progetto
-  applyProjectFilters() {
-    // Se vuoi filtrare lato server, fai qui la chiamata con parametri
-    this.projects = this.projectService.getFilteredProjects(this.filterProjectSkill, this.filterProjectAvailability);
-    console.log('Filtri applicati', this.filterProjectSkill, this.filterProjectAvailability);
+  applyProjectFilters() 
+  {
+    this.projects = this.projectService.getFilteredProjects(this.filterProjectSkill, this.filterProjectAvailability, this.filterProjectEnv);
   }
 
-  clearProjectFilters() {
+  //Azzera filtri
+  clearProjectFilters() 
+  {
     this.filterProjectSkill = '';
     this.filterProjectAvailability = '';
     this.projects = this.projectService.getAllProjects();
   }
 
-  add_userProject(project_id: number): void {
+  //Aggiunge uno user ad un progetto
+  add_userProject(project_id: number): void 
+  {
     if (this.user && this.user.user_id !== undefined) {
       this.projectService.joinUserToProject(project_id, this.user.user_id, 0).subscribe({
         next: (response) => {
-          console.log("✅ Unione al progetto riuscita!", response);
           // Mostra popup di successo con il messaggio del backend
-          this.showPopup('success', response.message || 'Ti sei unito con successo al progetto!');
+          this.showPopup('success', response.message || 'You join the projects correctly');
         },
         error: (error) => {
-          console.error("❌ Errore durante l'unione al progetto:", error);
           // Mostra popup di errore con il messaggio dal backend
-          const errorMessage = error.error?.message || 'Si è verificato un errore sconosciuto.';
+          const errorMessage = error.error?.message || 'Error during the join project.';
           this.showPopup('error', errorMessage);
         }
       });
     }
   }
 
-showPopup(type: 'success' | 'error', message: string): void {
-  this.popupType = type;
-  this.popupMessage = message;
-  this.popupVisible = true;
+  showPopup(type: 'success' | 'error', message: string): void 
+  {
+    this.popupType = type;
+    this.popupMessage = message;
+    this.popupVisible = true;
 
-  // Chiudi automaticamente dopo 3 secondi
-  setTimeout(() => {
-    this.popupVisible = false;
-  }, 3000);
-}
+    // Chiudi automaticamente dopo 3 secondi
+    setTimeout(() => {
+      this.popupVisible = false;
+    }, 3000);
+  }
 
-  closePopup() {
+  closePopup() 
+  {
     this.popupVisible = false;
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void 
+  {
     this.projects = this.projectService.getAllProjects();
     this.userService.getCurrentUserObservable().subscribe({
       next: (u) => {
         this.user = u;
       }
     });
-    console.log(this.projects)
   }
-    
 }

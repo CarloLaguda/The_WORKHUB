@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Register } from '../models/register.model';
 import { RegistrationService } from '../service/registrazione.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -10,34 +9,41 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./registrazione.css'],
   imports: [CommonModule, RouterLink]
 })
-export class Registrazione implements OnInit, OnDestroy {
+export class Registrazione implements OnInit, OnDestroy 
+{
 
-  @ViewChild('registerBtn') registerBtn!: ElementRef<HTMLButtonElement>;
-
-  showPassword: boolean = false;
+  showPassword: boolean = false; //Variabili per toggke password e per la data
   showPassword1: boolean = false;
   passwordError: boolean = false;
   dataNascita: string = ""
+  button1: boolean = false //Accettazione termini
+  button2: boolean = false
+
   constructor(private rService: RegistrationService) {}
 
+  togglebutton1(){this.button1 = !this.button1}
+  togglebutton2(){this.button2 = !this.button2}
   togglePassword() { this.showPassword = !this.showPassword; }
   togglePassword1() { this.showPassword1 = !this.showPassword1; }
 
+  //Variabili e metodi per POPUP
   popupType: 'success' | 'error' | null = null;
   errorMessage: string = '';
+  openPopup(type: 'success' | 'error', message?: string) 
+  {
 
-  openPopup(type: 'success' | 'error', message?: string) {
     this.popupType = type;
     if (type === 'error' && message) {
       this.errorMessage = message;
     }
   }
-
-  closePopup() {
+  closePopup() 
+  {
     this.popupType = null;
     this.errorMessage = '';
   }
  
+  //Metodo della registrazione
   register_start(
   username: HTMLInputElement,
   email: HTMLInputElement,
@@ -49,24 +55,29 @@ export class Registrazione implements OnInit, OnDestroy {
   gender: HTMLSelectElement
   ) 
   {
-    if (!username.value || !email.value || !password.value || !conf_pass.value ||
-        !nome.value || !cognome.value || !dataNascitaInput.value || !gender.value) {
-      this.openPopup('error', '⚠️ Devi compilare tutti i campi.');
+    if (!username.value || !email.value || !password.value || !conf_pass.value || !nome.value || !cognome.value || !dataNascitaInput.value || !gender.value)
+    {
+      this.openPopup('error', '⚠️ You must insert all the field.');
       return;
     }
 
-    if (!email.value.includes('@')) {
-      this.openPopup('error', '⚠️ Devi inserire una email valida.');
-    return;
+    if (!email.value.includes('@')) 
+    {
+      this.openPopup('error', '⚠️ You must insert a valide email');
+      return;
     }
 
-    if (password.value !== conf_pass.value) {
+    if (password.value !== conf_pass.value) 
+    {
       this.passwordError = true;
-      this.openPopup('error', 'Le password non coincidono.');
+      this.openPopup('error', 'Passwords dont matches.');
       return;
-    } else {
+    } else 
+    {
       this.passwordError = false;
     }
+
+    if(!this.button1 || !this.button2){this.openPopup('error', '⚠️ You must accept the terms'); return}
 
     const dataNascita = new Date(dataNascitaInput.value);
     const oggi = new Date();
@@ -88,7 +99,8 @@ export class Registrazione implements OnInit, OnDestroy {
     };
 
     this.rService.register(regData).subscribe({
-      next: res => {
+      next: res => 
+      {
         console.log("✅ Registrazione completata", res);
         this.openPopup('success');
 
@@ -102,19 +114,22 @@ export class Registrazione implements OnInit, OnDestroy {
         dataNascitaInput.value = '';
         gender.value = '';
       },
-      error: err => {
-        console.error("❌ Errore registrazione", err);
-        const msg = err?.error?.message || 'Si è verificato un errore inatteso.';
+      error: err => 
+      {
+        console.error("❌ Registration error", err);
+        const msg = err?.error?.message || 'Unaxpected error during registration.';
         this.openPopup('error', msg);
       }
     });
-}
+  }
 
-  ngOnInit(): void {
+  ngOnInit(): void 
+  {
     document.body.style.overflow = 'hidden';
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy(): void 
+  {
     document.body.style.overflow = 'auto';
   }
 }

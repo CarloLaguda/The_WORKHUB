@@ -8,11 +8,11 @@ export interface LoginResponse {
   user_id?: number;
 }
 
-@Injectable({
+@Injectable({ //Service per la login
   providedIn: 'root'
 })
-export class LoginService {
-  private apiUrl = 'https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/api/login';
+export class LoginService { //Service per fare la login 
+  private apiUrl = 'https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 

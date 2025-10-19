@@ -1,4 +1,4 @@
-export class Register{
+export class Register{ //Modello di dati per la registrazione base
     constructor(
         public username: string,
         public email: string,

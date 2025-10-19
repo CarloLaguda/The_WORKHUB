@@ -123,7 +123,7 @@
                 </select>
                 <p>Le tue skils: {{user?.skills}}</p>
             </div>
-            <button (click) = "addUserSkill('skill_names')">Aggiungi alle tue skill</button>
+            <button (click) = "addUserSkill()">Aggiungi alle tue skill</button>
             <div class="progetti">
                 <h2>Progetti</h2>
                 @if(progetti.length === 0){

@@ -6,16 +6,17 @@ import { Project } from '../models/project.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectService {
-  private apiUrl = 'https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/'; // URL della tua API
+export class ProjectService //SERVICE PER CREAZIONE E GET DI UN PROGETTO
+{
+  private apiUrl = 'https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 
   getAllProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(this.apiUrl+ 'api/projects_details');
+    return this.http.get<Project[]>(this.apiUrl+ '/projects_details');
   }
 
-  getFilteredProjects(skill?: string, availability?: string): Observable<Project[]> {
+  getFilteredProjects(skill?: string, availability?: string, env?:string): Observable<Project[]> {
     let params = new HttpParams();
 
     if (skill) {
@@ -24,8 +25,10 @@ export class ProjectService {
     if (availability) {
       params = params.set('availability', availability);
     }
-
-    return this.http.get<Project[]>(this.apiUrl+ 'api/projects_details', { params });
+    if(env){
+      params = params.set('environment', env)
+    }
+    return this.http.get<Project[]>(this.apiUrl+ '/projects_details', { params });
   }
 
   createProject(
@@ -43,17 +46,17 @@ export class ProjectService {
       creator_user_id: creatorUserId
     };
 
-    return this.http.post<Project>(`${this.apiUrl}api/create_projects`, body);
+    return this.http.post<Project>(`${this.apiUrl}/create_projects`, body);
   }
 
   joinUserToProject(projectId: number, userId: number, isCreator: number): Observable<any> {
     const body = { project_id: projectId, user_id: userId, is_creator: isCreator };
-    return this.http.post(`${this.apiUrl}api/join_user_projects`, body);
+    return this.http.post(`${this.apiUrl}/join_user_projects`, body);
   }
 
   getUserProjects(user_id: number): Observable<Project[]> {
     const params = new HttpParams().set('user_id', user_id);
-    return this.http.get<Project[]>(`${this.apiUrl}api/user_projects`, { params });
+    return this.http.get<Project[]>(`${this.apiUrl}/user_projects`, { params });
   }
 
 }

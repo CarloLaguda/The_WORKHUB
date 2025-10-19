@@ -6,9 +6,9 @@ import { Register } from '../models/register.model';
 @Injectable({
   providedIn: 'root'
 })
-export class RegistrationService {
+export class RegistrationService {//SERVICE PER LA LOGIN
 
-  private baseUrl: string = "https://glowing-goggles-5ggww455qjx7c7p9w-5000.app.github.dev/api";
+  private baseUrl: string = "https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api/register";
 
   constructor(private http: HttpClient) { }
 
@@ -17,7 +17,7 @@ export class RegistrationService {
    * @param data Oggetto con i dati della registrazione
    */
   register(data: Register): Observable<Register> {
-    return this.http.post<Register>(`${this.baseUrl}/register`, data);
+    return this.http.post<Register>(this.baseUrl, data);
 
   }
 }

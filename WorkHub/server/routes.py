@@ -378,24 +378,29 @@ def add_env_to_project():
 @app.route('/api/projects_details', methods=['GET'])
 def get_project_details():
     base_select = """
-        SELECT 
-            Project.project_id,
-            Project.title,
-            Project.description,
-            Project.availability,
-            Project.max_persone,
-            Project.is_full,
-            CONCAT(User.first_name, ' ', User.last_name) AS creator_name,
-            GROUP_CONCAT(DISTINCT Skill.skill_name SEPARATOR ', ') AS required_skills,
-            COALESCE(Project_user_count.user_count, 0) AS user_count
-        """
-    
+    SELECT
+    Project.project_id,
+    Project.title,
+    Project.description,
+    Project.availability,
+    Project.max_persone,
+    Project.is_full,
+    CONCAT(User.first_name, ' ', User.last_name) AS creator_name,
+    GROUP_CONCAT(DISTINCT Skill.skill_name SEPARATOR ', ') AS required_skills,
+    GROUP_CONCAT(DISTINCT Env.ambit_name SEPARATOR ', ') AS environments,
+    COALESCE(Project_user_count.user_count, 0) AS user_count
+    """
+
     base_from_and_joins = """
         FROM Project
         LEFT JOIN Project_skill 
             ON Project.project_id = Project_skill.project_id
         LEFT JOIN Skill 
             ON Project_skill.skill_id = Skill.skill_id
+        LEFT JOIN Project_env 
+            ON Project.project_id = Project_env.project_id
+        LEFT JOIN Env 
+            ON Project_env.ambit_id = Env.ambit_id
         LEFT JOIN (
             SELECT 
                 project_id,
@@ -418,6 +423,7 @@ def get_project_details():
     disponibilita = request.args.get('availability', type=str)
     skills = request.args.get('skills', type=str)
     creator_name = request.args.get('creator_name', type=str)
+    environment = request.args.get('environment', type=str)
 
     if project_id:
         conditions.append("Project.project_id = %s")
@@ -432,10 +438,13 @@ def get_project_details():
         params.append(f"%{skills}%")
 
     if creator_name:
-        # Ricerca su nome e cognome concatenati
         conditions.append("CONCAT(User.first_name, ' ', User.last_name) LIKE %s")
         params.append(f"%{creator_name}%")
-    
+
+    if environment:
+        conditions.append("Env.ambit_name LIKE %s")
+        params.append(f"%{environment}%")
+
     # --- Costruzione finale della query ---
     query = base_select + " " + base_from_and_joins
 
@@ -451,7 +460,7 @@ def get_project_details():
 
         mycursor.execute(query, tuple(params))
 
-        if project_id and not disponibilita and not skills and not creator_name:
+        if project_id and not (disponibilita or skills or creator_name or environment):
             project = mycursor.fetchone()
             if not project:
                 return jsonify({"message": "Project not found"}), 404
@@ -473,9 +482,11 @@ def get_project_details():
         print(f"Errore durante l'esecuzione della query get_project_details: {err}")
         return jsonify({"error": "Database query error"}), 500
 
+
 @app.route('/api/user_projects', methods=['GET'])
 def get_user_projects():
     user_id = request.args.get('user_id', type=int)
+
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
 
@@ -489,6 +500,7 @@ def get_user_projects():
             p.is_full,
             CONCAT(u.first_name, ' ', u.last_name) AS creator_name,
             GROUP_CONCAT(DISTINCT s.skill_name SEPARATOR ', ') AS required_skills,
+            GROUP_CONCAT(DISTINCT e.ambit_name SEPARATOR ', ') AS environments,
             COALESCE(pc.user_count, 0) AS user_count
         FROM Project p
         JOIN Project_user pu ON p.project_id = pu.project_id
@@ -499,16 +511,31 @@ def get_user_projects():
         ) AS pc ON p.project_id = pc.project_id
         LEFT JOIN Project_skill ps ON p.project_id = ps.project_id
         LEFT JOIN Skill s ON ps.skill_id = s.skill_id
+        LEFT JOIN Project_env pe ON p.project_id = pe.project_id
+        LEFT JOIN Env e ON pe.ambit_id = e.ambit_id
         LEFT JOIN Project_user creator_link 
             ON p.project_id = creator_link.project_id AND creator_link.is_creator = 1
         LEFT JOIN User u ON creator_link.user_id = u.user_id
         WHERE pu.user_id = %s
-        GROUP BY p.project_id, p.title, p.description, p.availability, p.max_persone, p.is_full, creator_name, user_count
+    """
+
+    params = [user_id]
+
+    query += """
+        GROUP BY 
+            p.project_id, 
+            p.title, 
+            p.description, 
+            p.availability, 
+            p.max_persone, 
+            p.is_full, 
+            creator_name, 
+            user_count
         ORDER BY p.project_id;
     """
 
     try:
-        mycursor.execute(query, (user_id,))
+        mycursor.execute(query, tuple(params))
         projects = mycursor.fetchall()
 
         if not projects:
@@ -521,6 +548,7 @@ def get_user_projects():
     except mysql.connector.Error as err:
         print(f"Database error in get_user_projects: {err}")
         return jsonify({"error": "Database query error"}), 500
+
 
 @app.route('/api/update_user', methods=['PUT'])
 def update_user():

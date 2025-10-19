@@ -9,7 +9,7 @@ import { UserService } from '../user.service';  // aggiorna con il nome corretto
 export class AuthGuard implements CanActivate {
 
   constructor(private userService: UserService, private router: Router) {}
-
+  //PROTEZIONE PER LE ROTTE IN CASO DI FURBETTI
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

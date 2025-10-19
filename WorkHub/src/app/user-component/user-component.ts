@@ -12,10 +12,11 @@ import { RouterLink } from "@angular/router";
   templateUrl: './user-component.html',
   styleUrl: './user-component.css'
 })
-export class UserComponent implements OnInit {
-  user: User | null = null; // 👈 Utente loggato
+export class UserComponent implements OnInit 
+{
+  user: User | null = null; //Utente loggato
 
-  Users!: Observable<User[]>;
+  Users!: Observable<User[]>; //Lista utenti
   expandedUserId: number | null = null;
 
   // Lista di skill disponibili
@@ -26,39 +27,39 @@ export class UserComponent implements OnInit {
     "Docker","Content Writing","Carpentry","Testing"
   ];
 
-  // Lista di paesi basata dai tuoi dati
-  countriesList: string[] = [
-    "Italia","Stati Uniti","Spagna","Germania","Francia","Brasile"
-  ];
-
   filterAge?: number;
   filterSkill?: string;
   filterCountry?: string;
 
   constructor(private userService: UserService) {}
 
-  toggleDetails(userId: number) {
+  toggleDetails(userId: number) //Espandi i dettagli user
+  {
     this.expandedUserId = this.expandedUserId === userId ? null : userId;
   }
 
   
-  applyFilters() {
-      this.Users = this.userService.getFilteredUsers(
-        this.filterAge,
-        this.filterSkill,
-        this.filterCountry
-      );
+  applyFilters() //Richiesta per gli user filtrati
+  {
+    this.Users = this.userService.getFilteredUsers(
+      this.filterAge,
+      this.filterSkill,
+      this.filterCountry
+    );
   }
-  clearFilters() {
+
+  clearFilters() //Azzera filtri
+  {
     this.filterAge = 0;
     this.filterSkill = '';
     this.filterCountry = '';
     this.Users = this.userService.getAllUsers();
   }
 
-  ngOnInit(): void {
-    this.Users = this.userService.getAllUsers();
-    this.userService.getCurrentUserObservable().subscribe({
+  ngOnInit(): void 
+  {
+    this.Users = this.userService.getAllUsers(); //Prende tutti user
+    this.userService.getCurrentUserObservable().subscribe({ //salvo lo user loggato
       next: (u) => {
         this.user = u;
       }

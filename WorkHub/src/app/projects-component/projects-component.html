@@ -11,6 +11,16 @@
   </label>
 
   <label>
+    Ambiti
+    <select [(ngModel)]="filterProjectEnv">
+      <option value="">-- Tutte gli ambiti --</option>
+      @for(env of envList; track env) {
+        <option [value]="env">{{ env }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
     Disponibilità:
     <select [(ngModel)]="filterProjectAvailability">
       <option value="full">Full</option>
@@ -48,6 +58,7 @@
           @if (expandedProjectId === pro.project_id) {
             <div class="details">
               <p>Skill richieste: {{ pro.required_skills }}</p>
+              <p>Ambito: {{pro.environments}}</p>
               <p>Disponibilità: {{ pro.availability }}</p>
               <p>Descrizione: {{ pro.description }}</p>
             </div>

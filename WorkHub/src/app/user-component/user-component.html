@@ -16,12 +16,7 @@
 
   <label>
     Paese:
-    <select [(ngModel)]="filterCountry">
-      <option value="">-- Tutti i paesi --</option>
-      @for(country of countriesList; track country) {
-        <option [value]="country">{{ country }}</option>
-      }
-    </select>
+    <input type="text" [(ngModel)]="filterCountry" />
   </label>
 
   <button (click)="applyFilters()">Filtra</button>
