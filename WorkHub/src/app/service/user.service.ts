@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
 providedIn: 'root'
 })
 export class UserService {//SERVICE per la gestione degli uUSER
-  private apiUrl = 'https://bookish-journey-pjjxxg6jpgjvf7vjp-5000.app.github.dev/';
+  private apiUrl = 'https://refactored-space-happiness-v66xxg56q6r9cx5qq-5000.app.github.dev/';
   private currentUserSubject: BehaviorSubject<User | null>; //User Loggato
 
   constructor(private http: HttpClient) {
