@@ -1,16 +1,27 @@
 import mysql.connector
 import pandas as pd
 
-#Connection to DB and Create Table
+# At top of file
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env in development if present
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_USER = os.getenv("DB_USER", "vscode")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_NAME = os.getenv("DB_NAME", "WorkHubDB")
+
+mydb = mysql.connector.connect(
+    host=DB_HOST,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    database=DB_NAME
+)
+
 try:
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="vscode",
-        password="",
-        database="WorkHubDB"
-    )
     mycursor = mydb.cursor()
-    
+
     #------------------------------------------------------------------------------------------------------
     #Env Table
     mycursor.execute("""
@@ -99,7 +110,7 @@ try:
 
 
     #------------------------------------------------------------------------------------------------------
-    #Project_skill Table
+    #Project_env Table
     mycursor.execute("""
     CREATE TABLE IF NOT EXISTS Project_env (
         project_id INT NOT NULL,
@@ -125,8 +136,8 @@ try:
     """)
     #------------------------------------------------------------------------------------------------------
 
+    mydb.commit()
 
-    #------------------------------------------------------------------------------------------------------
     CSV_FILES = [
         'env',
         'user',
@@ -138,6 +149,7 @@ try:
         'user_skill'
     ]
 
+    # clear tables in dependency-safe order
     mycursor.execute("DELETE FROM User_skill")
     mycursor.execute("DELETE FROM Project_env")
     mycursor.execute("DELETE FROM Project_skill")
@@ -147,12 +159,13 @@ try:
     mycursor.execute("DELETE FROM Project")
     mycursor.execute("DELETE FROM Env")
     mydb.commit()
+
     for files in CSV_FILES:
         print(files)
         match files:
             case 'env':
                 data = pd.read_csv('WorkHub/server/csv_files/env.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Env VALUES (%s, %s, %s)"
                     cursor.execute(sql, tuple(row))
@@ -160,50 +173,56 @@ try:
 
             case 'user':
                 data = pd.read_csv('WorkHub/server/csv_files/user.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO User VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
+
             case 'project':
                 data = pd.read_csv('WorkHub/server/csv_files/project.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project VALUES (%s,%s,%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
+
             case 'skill':
                 data = pd.read_csv('WorkHub/server/csv_files/skill.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Skill VALUES (%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
-            #Tabelle Relazioni---------------------------------------------------------------------------------------
+
+            # Relations
             case 'skill_project':
                 data = pd.read_csv('WorkHub/server/csv_files/skill_project.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_skill VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
+
             case 'project_env':
                 data = pd.read_csv('WorkHub/server/csv_files/project_env.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_env VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
+
             case 'project_user':
                 data = pd.read_csv('WorkHub/server/csv_files/project_user.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO Project_user VALUES (%s,%s,%s,%s)"
                     cursor.execute(sql, tuple(row))
                     mydb.commit()
+
             case 'user_skill':
                 data = pd.read_csv('WorkHub/server/csv_files/user_skill.csv', delimiter=',')
-                for i,row in data.iterrows():
+                for i, row in data.iterrows():
                     cursor = mydb.cursor()
                     sql = "INSERT INTO User_skill VALUES (%s,%s)"
                     cursor.execute(sql, tuple(row))
@@ -213,5 +232,8 @@ except mysql.connector.Error as err:
     print(f"⚠️ Error connecting to MariaDB: {err}")
 finally:
     if 'mydb' in locals() and mydb.is_connected():
-        mycursor.close()
+        try:
+            mycursor.close()
+        except Exception:
+            pass
         mydb.close()
