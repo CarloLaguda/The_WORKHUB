@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjectJoinService{
-  private apiUrl = 'https://ominous-fortnight-q77ww96jrgxq26x69-5000.app.github.dev/api'; // Base URL
+  private apiUrl = 'https://bookish-journey-pjjxxg6jpgjvf7vjp-5000.app.github.dev/'; // Base URL
 
   constructor(private http: HttpClient) {}
 

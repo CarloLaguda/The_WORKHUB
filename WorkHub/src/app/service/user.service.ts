@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
 providedIn: 'root'
 })
 export class UserService {//SERVICE per la gestione degli uUSER
-  private apiUrl = 'https://ominous-fortnight-q77ww96jrgxq26x69-5000.app.github.dev/api';
+  private apiUrl = 'https://bookish-journey-pjjxxg6jpgjvf7vjp-5000.app.github.dev/';
   private currentUserSubject: BehaviorSubject<User | null>; //User Loggato
 
   constructor(private http: HttpClient) {

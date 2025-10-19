@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService { //Service per fare la login 
-  private apiUrl = 'https://ominous-fortnight-q77ww96jrgxq26x69-5000.app.github.dev/api/login';
+  private apiUrl = 'https://bookish-journey-pjjxxg6jpgjvf7vjp-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 
