@@ -1,10 +1,108 @@
+* {
+    font-family: Calibri, 'Trebuchet MS', sans-serif;
+}
+
 .project{
-    padding: 10px;
-    width: 10vw;
-    height: 300px;
-    border: solid black 1px;
-    margin: 10px;
-    border-radius: 10px;
+  border: solid black 2px;
+  border-radius: 10px;
+  width: 220px;
+  height: 350px;
+  margin: 20px;
+  padding: 10px;
+}
+
+.btnProject{
+  margin: 3px;
+  height: 25px;
+  background-color: transparent;
+  border: solid orangered 1px;
+  border-radius: 5px;
+  font-weight: bold;
+  transition-duration: 0.2s;
+}
+
+.btnProject:hover{
+  background-color: orangered;
+  color: white;
+  transition-duration: 0.2s;
+}
+
+.container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.projects-list{
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.filters-projects{
+  background-color: orangered;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.btnFilters{
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+}
+
+.btnFilter{
+  flex-grow: 1;
+  border: solid rgb(177, 47, 0) 1px;
+  background-color: rgb(177, 47, 0);
+  color: white;
+  border-radius: 10px;
+  margin: 10px;
+  height: 50px;
+  font-size: 15px;
+  font-weight: bold;
+  transition-duration: 0.3s;
+}
+
+.btnFilter:hover{
+  transition-duration: 0.3s;
+  color: white;
+  background-color: orangered;
+}
+
+.filter{
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  margin: 5px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btnBackDiv{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.btnBack{
+  margin: 10px;
+}
+
+h1{
+  font-size: 50px;
+  color: white;
+}
+
+h4{
+  color: white;
 }
 
 /* --- POPUP BOX --- */

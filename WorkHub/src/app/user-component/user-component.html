@@ -1,64 +1,64 @@
-<div class="filters">
-  <label>
-    Età minima:
-    <input type="number" [(ngModel)]="filterAge" />
-  </label>
+<div class="container">
+  <div class="utents-list">
+    @if (Users | async; as Users) {
+      @for (u of Users; track u.user_id) {
+        @if(u.user_id != user?.user_id){
+          <div class="user-card">
+          <h2><b>{{ u.first_name }} {{ u.last_name }}</b></h2>
+          <p>Età: {{ u.eta }}</p>
 
-  <label>
-    Skill:
-    <select [(ngModel)]="filterSkill">
-      <option value="">-- Tutte le skill --</option>
-      @for (skill of skillsList; track skill) {
-        <option [value]="skill">{{ skill }}</option>
-      }
-    </select>
-  </label>
+          <!-- 🔹 Toggle solo per questo utente -->
+          <button (click)="toggleDetails(u.user_id)" class="btnUser">
+            {{ expandedUserId === u.user_id ? 'Nascondi dettagli' : 'Scopri di più' }}
+          </button>
 
-  <label>
-    Paese:
-    <input type="text" [(ngModel)]="filterCountry" />
-  </label>
-
-  <button (click)="applyFilters()">Filtra</button>
-  <button (click)="clearFilters()">Reset</button>
-</div>
-
-<div>
-  <div> Nome Utente {{user?.first_name}} {{user?.last_name}}</div>
-  <div>Torna alla tua pagina privata
-    <button routerLink="/profile">Profilo</button>
-  </div>
-</div>
-<hr />
-
-@if (Users | async; as Users) {
-  <div>
-    @for (u of Users; track u.user_id) {
-      @if(u.user_id != user?.user_id){
-        <div class="user-card">
-        <p><b>{{ u.first_name }} {{ u.last_name }}</b></p>
-        <p>Età: {{ u.eta }}</p>
-
-        <!-- 🔹 Toggle solo per questo utente -->
-        <button (click)="toggleDetails(u.user_id)">
-          {{ expandedUserId === u.user_id ? 'Nascondi dettagli' : 'Scopri di più' }}
-        </button>
-
-        <!-- 🔹 Mostra dettagli solo se questo utente è espanso -->
-        @if (expandedUserId === u.user_id) {
-          <div class="details">
-            <p>Skill: {{ u.skills }}</p>
-            <p>Paese: {{ u.country }}</p>
-            <p>Anni di esperienza: {{ u.anni_di_esperienza }}</p>
-            <p>Status: {{ u.status }}</p>
-          </div>
+          <!-- 🔹 Mostra dettagli solo se questo utente è espanso -->
+          @if (expandedUserId === u.user_id) {
+            <div class="details">
+              <p>Skill: {{ u.skills }}</p>
+              <p>Paese: {{ u.country }}</p>
+              <p>Anni di esperienza: {{ u.anni_di_esperienza }}</p>
+              <p>Status: {{ u.status }}</p>
+            </div>
+          }
+        </div>
+        <br>
         }
-      </div>
-      <br>
+        
       }
-      
+    } @else {
+      <p>Caricamento in corso...</p>
     }
   </div>
-} @else {
-  <p>Caricamento in corso...</p>
-}
+
+  <div class="filters">
+    <div class="btnBackDiv">
+      <button class="btnBack" routerLink="/profile">Torna al profilo</button>
+    </div>
+    <h1>Cerca</h1>
+    <div class="filter">
+      <h4>Età minima: </h4>
+      <input type="number" [(ngModel)]="filterAge" />
+    </div>
+
+    <div class="filter">
+      <h4>Skill: </h4>
+      <select [(ngModel)]="filterSkill">
+        <option value="">-- Tutte le skill --</option>
+        @for (skill of skillsList; track skill) {
+          <option [value]="skill">{{ skill }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter">
+      <h4>Paese: </h4>
+      <input type="text" [(ngModel)]="filterCountry" />
+    </div>
+
+    <div class="btnFilters">
+      <button (click)="applyFilters()" class="btnFilter">Filtra</button>
+      <button (click)="clearFilters()" class="btnFilter">Reset</button>
+    </div>
+  </div>
+</div>

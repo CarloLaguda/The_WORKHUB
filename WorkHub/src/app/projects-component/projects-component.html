@@ -1,75 +1,75 @@
+<div class="container">
+  <!-- 🔹 Lista progetti filtrata -->
+  <div class="projects-list">
+    @if (projects | async; as projects) {
+      @for (pro of projects; track pro) {
+        <!-- Applica filtro skill e availability -->
+          <div class="project">
+            <h2>{{ pro.title }}</h2>
+            <p>Numero di persone: {{ pro.user_count }}</p>
+            @if(!pro.is_full){
+              <button (click) = "add_userProject(pro.project_id)" class="btnProject">Unisciti al Proggetto</button>
+            }
+            <!-- Toggle dettagli progetto -->
+            <button (click)="toggleProjectDetails(pro.project_id)" class="btnProject">
+              {{ expandedProjectId === pro.project_id ? 'Nascondi dettagli' : 'Scopri di più' }}
+            </button>
 
-<div class="filters-projects">
-  <label>
-    Skill richiesta:
-    <select [(ngModel)]="filterProjectSkill">
-      <option value="">-- Tutte le skill --</option>
-      @for(skill of skillsList; track skill) {
-        <option [value]="skill">{{ skill }}</option>
-      }
-    </select>
-  </label>
+            @if (expandedProjectId === pro.project_id) {
+              <div class="details">
+                <p>Skill richieste: {{ pro.required_skills }}</p>
+                <p>Ambito: {{pro.environments}}</p>
+                <p>Disponibilità: {{ pro.availability }}</p>
+                <p>Descrizione: {{ pro.description }}</p>
+              </div>
+            }
+          </div>
+          <br>
+        }
+    }@else {
+      <p>Caricamento in corso...</p>
+    }
+  </div>
 
-  <label>
-    Ambiti
-    <select [(ngModel)]="filterProjectEnv">
-      <option value="">-- Tutte gli ambiti --</option>
-      @for(env of envList; track env) {
-        <option [value]="env">{{ env }}</option>
-      }
-    </select>
-  </label>
+  <div class="filters-projects">
+    <div class="btnBackDiv">
+      <button class="btnBack" routerLink="/profile">Torna al profilo</button>
+    </div>
+    <h1>Cerca</h1>
+    <div class="filter">
+      <h4>Skill: </h4>
+      <select [(ngModel)]="filterProjectSkill">
+        <option value="">-- Tutte le skill --</option>
+        @for(skill of skillsList; track skill) {
+          <option [value]="skill">{{ skill }}</option>
+        }
+      </select>
+    </div>
 
-  <label>
-    Disponibilità:
-    <select [(ngModel)]="filterProjectAvailability">
-      <option value="full">Full</option>
-      <option value="open">Open</option>
-    </select>
-  </label>
+    <div class="filter">
+      <h4>Ambiti: </h4>
+      <select [(ngModel)]="filterProjectEnv">
+        <option value="">-- Tutte gli ambiti --</option>
+        @for(env of envList; track env) {
+          <option [value]="env">{{ env }}</option>
+        }
+      </select>
+    </div>
 
-  <button (click)="applyProjectFilters()">Filtra progetti</button>
-  <button (click)="clearProjectFilters()">Reset progetti</button>
-</div>
-<div>
-  <div> Nome Utente {{user?.first_name}} {{user?.last_name}}</div>
-  <div>Torna alla tua pagina privata
-    <button routerLink="/profile">Profilo</button>
+    <div class="filter">
+      <h4>Disponibilità: </h4>
+      <select [(ngModel)]="filterProjectAvailability">
+        <option value="full">Full</option>
+        <option value="open">Open</option>
+      </select>
+    </div>
+
+    <div class="btnFilters">
+      <button (click)="applyProjectFilters()" class="btnFilter">Filtra progetti</button>
+      <button (click)="clearProjectFilters()" class="btnFilter">Reset progetti</button>
+    </div>
   </div>
 </div>
-<hr />
-
-<!-- 🔹 Lista progetti filtrata -->
-@if (projects | async; as projects) {
-  <div>
-    @for (pro of projects; track pro) {
-      <!-- Applica filtro skill e availability -->
-        <div class="project-card">
-          <h1>{{ pro.title }}</h1>
-          <p>Numero di persone: {{ pro.user_count }}</p>
-          @if(!pro.is_full){
-            <button (click) = "add_userProject(pro.project_id)">Unisciti al Proggetto</button>
-          }
-          <!-- Toggle dettagli progetto -->
-          <button (click)="toggleProjectDetails(pro.project_id)">
-            {{ expandedProjectId === pro.project_id ? 'Nascondi dettagli' : 'Scopri di più' }}
-          </button>
-
-          @if (expandedProjectId === pro.project_id) {
-            <div class="details">
-              <p>Skill richieste: {{ pro.required_skills }}</p>
-              <p>Ambito: {{pro.environments}}</p>
-              <p>Disponibilità: {{ pro.availability }}</p>
-              <p>Descrizione: {{ pro.description }}</p>
-            </div>
-          }
-        </div>
-        <br>
-      }
-  </div>
-}@else {
-  <p>Caricamento in corso...</p>
-}
 
 <div class="popup-overlay"
      *ngIf="popupVisible && popupType === 'success'">
