@@ -1,4 +1,4 @@
-# IMPORTO LIBRERIE NECESSARIE
+# ROUTES + API (secure, but same endpoints)
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
@@ -8,19 +8,31 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import bcrypt
+import logging
 
-# CARICO LE VARIABILI DALL'ENV
-load_dotenv("/workspaces/The_WORKHUB/.env")  # or just load_dotenv() if .env is in the same folder
+# Rate limiting
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+# Load env
+load_dotenv("/workspaces/The_WORKHUB/.env")
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_USER = os.getenv("DB_USER", "vscode")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "WorkHubDB")
 
+# Logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("routes")
+
 app = Flask(__name__)
 CORS(app)
 
-# CONNESSIONE AL DB
+# Configure limiter and attach to app
+limiter = Limiter(get_remote_address, app=app, default_limits=["100 per hour"])
+
+# DB connection for the API server
 try:
     mydb = mysql.connector.connect(
         host=DB_HOST,
@@ -29,12 +41,45 @@ try:
         database=DB_NAME
     )
     mycursor = mydb.cursor()
-    print("✅ Connessione al database MySQL stabilita con successo!")
+    log.info("✅ Connessione al database MySQL stabilita con successo per l'API!")
 except mysql.connector.Error as err:
     mydb = None
     mycursor = None
-    print(f"⚠️ Errore nella connessione al database: {err}")
+    log.error(f"⚠️ Errore nella connessione al database per l'API: {err}")
 
+
+# ---------- Helper: safe_query ----------
+def safe_query(query, params=None, fetchone=False, fetchall=False, commit=False):
+    """
+    Execute SQL safely and return results.
+    - On commit-only insert, returns lastrowid.
+    - Returns None on error (and logs the error).
+    """
+    if not mydb or not mycursor:
+        log.error("⚠️ Database connection not available.")
+        return None
+
+    try:
+        mycursor.execute(query, params or ())
+        if commit:
+            mydb.commit()
+            # if an insert happened, return lastrowid
+            try:
+                return mycursor.lastrowid
+            except Exception:
+                return True
+        if fetchone:
+            return mycursor.fetchone()
+        if fetchall:
+            return mycursor.fetchall()
+        return True
+    except mysql.connector.Error as err:
+        # Log the full error server-side, but do NOT return details to clients
+        log.error(f"MySQL error executing query: {err} -- QUERY: {query} -- PARAMS: {params}")
+        return None
+
+
+# ---------- ROUTES (kept same names & behavior) ----------
 
 # --- REGISTER ---
 @app.route('/api/register', methods=['POST'])
@@ -51,77 +96,88 @@ def register():
     username = data['username']
     email = data['email']
 
+    # Check DB connection
+    if mycursor is None:
+        return jsonify({"message": "Database not initialized"}), 503
+
+    # Use safe_query to check existing username/email
+    existing = safe_query("SELECT user_id FROM User WHERE username = %s", (username,), fetchone=True)
+    if existing:
+        return jsonify({"message": "Username already exists"}), 409
+
+    existing = safe_query("SELECT user_id FROM User WHERE email = %s", (email,), fetchone=True)
+    if existing:
+        return jsonify({"message": "Email already registered"}), 409
+
     try:
-        # --- Check if username exists ---
-        mycursor.execute("SELECT user_id FROM User WHERE username = %s", (username,))
-        if mycursor.fetchone():
-            return jsonify({"message": "Username already exists"}), 409
-
-        # --- Check if email exists ---
-        mycursor.execute("SELECT user_id FROM User WHERE email = %s", (email,))
-        if mycursor.fetchone():
-            return jsonify({"message": "Email already registered"}), 409
-
-        # --- Hash the password with bcrypt ---
+        # Hash the password with bcrypt
         password_bytes = data['password'].encode('utf-8')
         hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
 
-        # --- Optional fields ---
         status = data.get('status') or None
         anni_di_esperienza = data.get('anni_di_esperienza') or None
         country = data.get('country') or None
 
-        # --- Insert new user ---
-        mycursor.execute("""
+        insert_query = """
             INSERT INTO User (
                 username, email, password, first_name, last_name, eta, gender,
                 status, anni_di_esperienza, country
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
+        """
+        res = safe_query(insert_query, (
             username, email, hashed_password,
             data['first_name'], data['last_name'],
             data['eta'], data['gender'],
             status, anni_di_esperienza, country
-        ))
-        mydb.commit()
+        ), commit=True)
+
+        if res is None:
+            # logged server-side; return generic error to client
+            return jsonify({"message": "Internal server error"}), 500
 
         return jsonify({"message": "User successfully registered"}), 201
 
-    except mysql.connector.Error as err:
-        print(f"Error during registration: {err}")
-        return jsonify({"message": f"Database error: {err}"}), 500
+    except Exception as e:
+        log.error(f"Unexpected error during registration: {e}")
+        return jsonify({"message": "Internal server error"}), 500
 
 
 # --- LOGIN ---
+@limiter.limit("5 per minute")
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     if not data or 'password' not in data:
         return jsonify({"message": "Password is required"}), 400
 
+    # accept either 'username' or 'email' like before
     identifier = data.get('username') or data.get('email')
     if not identifier:
         return jsonify({"message": "Username or email is required"}), 400
 
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        # --- Get user by username or email ---
-        mycursor.execute("""
+        user = safe_query("""
             SELECT user_id, password FROM User WHERE username = %s OR email = %s
-        """, (identifier, identifier))
-        user = mycursor.fetchone()
+        """, (identifier, identifier), fetchone=True)
 
         if user:
+            # user[1] is stored hashed password (string)
             hashed_password = user[1].encode('utf-8')
             if bcrypt.checkpw(data['password'].encode('utf-8'), hashed_password):
                 return jsonify({"message": "Login successful", "user_id": user[0]}), 200
 
+        # unified invalid credentials response (do not reveal whether user exists)
         return jsonify({"message": "Invalid credentials"}), 401
 
-    except mysql.connector.Error as err:
-        print(f"Database error during login: {err}")
-        return jsonify({"error": "Database error"}), 500
+    except Exception as e:
+        log.error(f"Database error during login: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
-#USER
+
+# --- USERS SEARCH ---
 @app.route('/api/users', methods=['GET'])
 def search_users():
     base_select = """
@@ -203,12 +259,17 @@ def search_users():
         ORDER BY User.user_id
     """
 
-    try:
-        mycursor.execute(query, tuple(params))
-        results = mycursor.fetchall()
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
 
-        column_names = [desc[0] for desc in mycursor.description]
-        response = [dict(zip(column_names, row)) for row in results]
+    try:
+        rows = safe_query(query, tuple(params), fetchall=True)
+        if rows is None:
+            return jsonify({"error": "Internal server error"}), 500
+
+        # Reuse existing description to get column names (same as original behavior)
+        column_names = [desc[0] for desc in mycursor.description] if mycursor.description else []
+        response = [dict(zip(column_names, row)) for row in rows]
 
         if user_id and response:
             return jsonify(response[0]), 200
@@ -217,168 +278,163 @@ def search_users():
         else:
             return jsonify({"message": "No users found"}), 404
 
-    except mysql.connector.Error as err:
-        print(f"Errore durante l'esecuzione della query nella route search_users: {err}")
+    except Exception as e:
+        log.error(f"Errore durante l'esecuzione della query nella route search_users: {e}")
         return jsonify({"error": "Errore nella query del database"}), 500
 
-#CREAZIONE DI UN PROGETTO
+
+# --- CREATE PROJECT ---
 @app.route('/api/create_projects', methods=['POST'])
 def create_project():
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
-    availability = data.get('availability', 'open')  # 👈 default open
+    availability = data.get('availability', 'open')
     max_persone = data.get('max_persone')
     creator_user_id = data.get('creator_user_id')
 
     if not all([title, description, max_persone, creator_user_id]):
         return jsonify({"message": "Missing required fields"}), 400
 
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        mycursor.execute("""
+        insert_project_q = """
             INSERT INTO Project (title, description, availability, max_persone, is_full)
             VALUES (%s, %s, %s, %s, %s)
-        """, (title, description, availability, max_persone, 1 if availability == 'full' else 0))
-        mydb.commit()
+        """
+        project_id = safe_query(insert_project_q, (title, description, availability, max_persone, 1 if availability == 'full' else 0), commit=True)
+        if project_id is None:
+            return jsonify({"message": "Internal server error"}), 500
 
-        project_id = mycursor.lastrowid
-
-        mycursor.execute("""
+        # Insert project_user
+        insert_pu_q = """
             INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
             VALUES (%s, %s, %s, %s)
-        """, (project_id, creator_user_id, datetime.now().strftime('%Y-%m-%d'), 1))
-        mydb.commit()
+        """
+        res = safe_query(insert_pu_q, (project_id, creator_user_id, datetime.now().strftime('%Y-%m-%d'), 1), commit=True)
+        if res is None:
+            return jsonify({"message": "Internal server error"}), 500
 
         return jsonify({"message": "Project created successfully", "project_id": project_id}), 201
 
-    except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
+    except Exception as e:
+        log.error(f"Error in create_project: {e}")
+        return jsonify({"message": "Internal server error"}), 500
 
 
-# LEGARE UN UTENTE AD UN PROGETTO E AGGIORNARE STATUS
+# --- JOIN USER TO PROJECT ---
 @app.route('/api/join_user_projects', methods=['POST'])
 def join_project():
     data = request.get_json()
     project_id = data['project_id']
     user_id = data['user_id']
-    is_creator = data.get('is_creator', 0)  # Default 0 se non specificato
-    
+    is_creator = data.get('is_creator', 0)
+
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        # Recupera informazioni sul progetto
-        mycursor.execute("""
-            SELECT max_persone, is_full FROM Project WHERE project_id = %s
-        """, (project_id,))
-        project = mycursor.fetchone()
-        
+        project = safe_query("SELECT max_persone, is_full FROM Project WHERE project_id = %s", (project_id,), fetchone=True)
         if not project:
             return jsonify({"message": "Project not found"}), 404
-        
+
         max_persone, is_full = project
-        
+
         if is_full:
             return jsonify({"message": "Project is full"}), 400
-        
-        # Controlla se l'utente è già nel progetto
-        mycursor.execute("""
-            SELECT 1 FROM Project_user WHERE project_id = %s AND user_id = %s
-        """, (project_id, user_id))
-        if mycursor.fetchone():
+
+        already = safe_query("SELECT 1 FROM Project_user WHERE project_id = %s AND user_id = %s", (project_id, user_id), fetchone=True)
+        if already:
             return jsonify({"message": "User already joined this project"}), 200
-        
-        # Inserisci l'utente nel progetto
-        mycursor.execute("""
-            INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
-            VALUES (%s, %s, %s, %s)
-        """, (project_id, user_id, datetime.now().strftime('%Y-%m-%d'), is_creator))
-        
-        # Conta quanti utenti ci sono ora nel progetto
-        mycursor.execute("""
-            SELECT COUNT(*) FROM Project_user WHERE project_id = %s
-        """, (project_id,))
-        current_count = mycursor.fetchone()[0]
-        
-        # Aggiorna is_full e availability se necessario
-        new_is_full = 1 if current_count >= max_persone else 0
+
+        res = safe_query("INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator) VALUES (%s, %s, %s, %s)",
+                         (project_id, user_id, datetime.now().strftime('%Y-%m-%d'), is_creator), commit=True)
+        if res is None:
+            return jsonify({"message": "Internal server error"}), 500
+
+        current_count = safe_query("SELECT COUNT(*) FROM Project_user WHERE project_id = %s", (project_id,), fetchone=True)
+        if current_count is None:
+            return jsonify({"message": "Internal server error"}), 500
+        # current_count is a tuple like (N,)
+        count_val = current_count[0] if isinstance(current_count, (list, tuple)) else int(current_count)
+
+        new_is_full = 1 if count_val >= max_persone else 0
         new_availability = 'full' if new_is_full else 'open'
-        
-        mycursor.execute("""
-            UPDATE Project SET is_full = %s, availability = %s WHERE project_id = %s
-        """, (new_is_full, new_availability, project_id))
-        
-        mydb.commit()
+
+        update_res = safe_query("UPDATE Project SET is_full = %s, availability = %s WHERE project_id = %s",
+                                (new_is_full, new_availability, project_id), commit=True)
+        if update_res is None:
+            return jsonify({"message": "Internal server error"}), 500
+
         return jsonify({
             "message": "User successfully joined the project",
-            "current_users": current_count,
+            "current_users": count_val,
             "is_full": new_is_full,
             "availability": new_availability
         }), 200
-        
-    except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
 
-    
-#LEGARE SKILL A PROJECT
+    except Exception as e:
+        log.error(f"Error in join_project: {e}")
+        return jsonify({"message": "Internal server error"}), 500
+
+
+# --- ADD SKILL TO PROJECT ---
 @app.route('/api/join_projects_skill', methods=['POST'])
 def add_skill_to_project():
     data = request.get_json()
     project_id = data['project_id']
-    skill_name = data['skill_name']  # Ora ricevi il nome della skill
-    
+    skill_name = data['skill_name']
+
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        # Recupera l'id della skill dal nome
-        mycursor.execute("""
-            SELECT skill_id FROM Skill WHERE skill_name = %s
-        """, (skill_name,))
-        result = mycursor.fetchone()
-        
+        result = safe_query("SELECT skill_id FROM Skill WHERE skill_name = %s", (skill_name,), fetchone=True)
         if not result:
             return jsonify({"message": f"Skill '{skill_name}' not found"}), 404
-        
+
         skill_id = result[0]
-        
-        # Ora inserisci la relazione nel progetto
-        mycursor.execute("""
-            INSERT INTO Project_skill (project_id, skill_id)
-            VALUES (%s, %s)
-        """, (project_id, skill_id))
+        res = safe_query("INSERT INTO Project_skill (project_id, skill_id) VALUES (%s, %s)", (project_id, skill_id), commit=True)
+        if res is None:
+            return jsonify({"message": "Internal server error"}), 500
 
-        mydb.commit()
         return jsonify({"message": f"Skill '{skill_name}' successfully added to the project"}), 200
-    except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
 
-#LEGARE UN PROGETTO AD UN ENV
+    except Exception as e:
+        log.error(f"Error in add_skill_to_project: {e}")
+        return jsonify({"message": "Internal server error"}), 500
+
+
+# --- ADD ENV TO PROJECT ---
 @app.route('/api/join_projects_env', methods=['POST'])
 def add_env_to_project():
     data = request.get_json()
     project_id = data['project_id']
-    env_name = data['env_name']  # Prendiamo il nome dell'env
-    
+    env_name = data['env_name']
+
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        # Recupera l'id dell'env dal nome
-        mycursor.execute("""
-            SELECT ambit_id FROM Env WHERE ambit_name = %s
-        """, (env_name,))
-        result = mycursor.fetchone()
-        
+        result = safe_query("SELECT ambit_id FROM Env WHERE ambit_name = %s", (env_name,), fetchone=True)
         if not result:
             return jsonify({"message": f"Environment '{env_name}' not found"}), 404
-        
+
         env_id = result[0]
-        
-        # Inserisci la relazione progetto-env
-        mycursor.execute("""
-            INSERT INTO Project_env (project_id, ambit_id)
-            VALUES (%s, %s)
-        """, (project_id, env_id))
+        res = safe_query("INSERT INTO Project_env (project_id, ambit_id) VALUES (%s, %s)", (project_id, env_id), commit=True)
+        if res is None:
+            return jsonify({"message": "Internal server error"}), 500
 
-        mydb.commit()
         return jsonify({"message": f"Environment '{env_name}' successfully added to the project"}), 200
-    except mysql.connector.Error as err:
-        return jsonify({"message": f"Error: {err}"}), 400
+
+    except Exception as e:
+        log.error(f"Error in add_env_to_project: {e}")
+        return jsonify({"message": "Internal server error"}), 500
 
 
-#FILTRO PROGETTO PER DETTAGLI
+# --- PROJECT DETAILS FILTER ---
 @app.route('/api/projects_details', methods=['GET'])
 def get_project_details():
     base_select = """
@@ -419,7 +475,6 @@ def get_project_details():
             ON Creator_link.user_id = User.user_id
     """
 
-    # --- Filtri dinamici ---
     conditions = []
     params = []
 
@@ -445,7 +500,6 @@ def get_project_details():
         conditions.append("CONCAT(User.first_name, ' ', User.last_name) LIKE %s")
         params.append(f"%{creator_name}%")
 
-    # --- Filtro per ambiente corretto ---
     if environment:
         conditions.append("""
             Project.project_id IN (
@@ -457,52 +511,52 @@ def get_project_details():
         """)
         params.append(f"%{environment}%")
 
-    # --- Composizione query finale ---
     query = base_select + " " + base_from_and_joins
-
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
 
     query += " GROUP BY Project.project_id ORDER BY Project.project_id"
 
-    # --- Esecuzione query ---
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
+
     try:
-        if mycursor is None or not mydb.is_connected():
-            return jsonify({"error": "Database connection lost or not initialized"}), 503
+        rows = safe_query(query, tuple(params), fetchall=True)
+        if rows is None:
+            return jsonify({"error": "Database query error"}), 500
 
-        mycursor.execute(query, tuple(params))
-
-        # Caso 1: ricerca per ID singolo
+        # If searching by single ID without other filters, return single project
         if project_id and not (disponibilita or skills or creator_name or environment):
-            project = mycursor.fetchone()
+            project = rows[0] if rows else None
             if not project:
                 return jsonify({"message": "Project not found"}), 404
 
-            column_names = [desc[0] for desc in mycursor.description]
+            column_names = [desc[0] for desc in mycursor.description] if mycursor.description else []
             project_dict = dict(zip(column_names, project))
             return jsonify(project_dict), 200
 
-        # Caso 2: lista di progetti filtrati
-        projects = mycursor.fetchall()
-        if not projects:
+        if not rows:
             return jsonify({"message": "No projects found matching criteria"}), 404
 
-        column_names = [desc[0] for desc in mycursor.description]
-        projects_list = [dict(zip(column_names, p)) for p in projects]
+        column_names = [desc[0] for desc in mycursor.description] if mycursor.description else []
+        projects_list = [dict(zip(column_names, p)) for p in rows]
         return jsonify(projects_list), 200
 
-    except mysql.connector.Error as err:
-        print(f"Errore durante l'esecuzione della query get_project_details: {err}")
+    except Exception as e:
+        log.error(f"Errore durante l'esecuzione della query get_project_details: {e}")
         return jsonify({"error": "Database query error"}), 500
 
 
-#PROGETTI DELL'UTENTE LOGGATO
+# --- USER PROJECTS ---
 @app.route('/api/user_projects', methods=['GET'])
 def get_user_projects():
     user_id = request.args.get('user_id', type=int)
 
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
+
+    if mycursor is None:
+        return jsonify({"error": "Database not initialized"}), 503
 
     query = """
         SELECT 
@@ -549,21 +603,23 @@ def get_user_projects():
     """
 
     try:
-        mycursor.execute(query, tuple(params))
-        projects = mycursor.fetchall()
+        rows = safe_query(query, tuple(params), fetchall=True)
+        if rows is None:
+            return jsonify({"error": "Database query error"}), 500
 
-        if not projects:
+        if not rows:
             return jsonify({"message": "No projects found for this user"}), 404
 
-        column_names = [desc[0] for desc in mycursor.description]
-        projects_list = [dict(zip(column_names, p)) for p in projects]
+        column_names = [desc[0] for desc in mycursor.description] if mycursor.description else []
+        projects_list = [dict(zip(column_names, p)) for p in rows]
         return jsonify(projects_list), 200
 
-    except mysql.connector.Error as err:
-        print(f"Database error in get_user_projects: {err}")
+    except Exception as e:
+        log.error(f"Database error in get_user_projects: {e}")
         return jsonify({"error": "Database query error"}), 500
 
-# Aggiorna dati utente con bcrypt
+
+# --- UPDATE USER ---
 @app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
@@ -576,7 +632,7 @@ def update_user():
         'status',
         'anni_di_esperienza',
         'country',
-        'password'  # 🔐 user password will be hashed with bcrypt
+        'password'
     ]
 
     updates = []
@@ -585,7 +641,6 @@ def update_user():
     for field in update_fields:
         if field in data and data[field] is not None:
             if field == 'password':
-                # 🔐 Hash the new password with bcrypt
                 hashed_password = bcrypt.hashpw(data[field].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 updates.append(f"{field} = %s")
                 params.append(hashed_password)
@@ -604,61 +659,69 @@ def update_user():
     params.append(user_id)
 
     try:
-        mycursor.execute(query, tuple(params))
-        mydb.commit()
+        res = safe_query(query, tuple(params), commit=True)
+        if res is None:
+            return jsonify({"message": "Database error"}), 500
 
         if mycursor.rowcount == 0:
             return jsonify({"message": "User not found"}), 404
 
         return jsonify({"message": "User information updated successfully"}), 200
 
-    except mysql.connector.Error as err:
-        print(f"Error updating user data: {err}")
-        return jsonify({"message": f"Database error: {err}"}), 500
+    except Exception as e:
+        log.error(f"Error updating user data: {e}")
+        return jsonify({"message": "Internal server error"}), 500
 
-#Aggiungi una skill allo user
+
+# --- ADD USER SKILL BY NAME ---
 @app.route('/api/add_user_skills_by_name', methods=['POST'])
 def add_user_skills_by_name():
     data = request.get_json()
-
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
 
     user_id = data.get('user_id')
-    skill_name = data.get('skill_names')  # accettiamo solo una stringa ora
+    skill_name = data.get('skill_names')  # as original
 
-    # Validazione parametri
     if not user_id:
         return jsonify({"message": "User ID is required"}), 400
     if not skill_name or not isinstance(skill_name, str):
         return jsonify({"message": "A single skill name as string is required"}), 400
 
     try:
-        mycursor.execute("SELECT skill_id, skill_name FROM Skill WHERE skill_name = %s", (skill_name,))
-        result = mycursor.fetchone()
-
+        result = safe_query("SELECT skill_id, skill_name FROM Skill WHERE skill_name = %s", (skill_name,), fetchone=True)
         if not result:
             return jsonify({"message": f"Skill '{skill_name}' not found"}), 404
 
         skill_id = result[0]
-
-        mycursor.execute("SELECT 1 FROM User_skill WHERE user_id = %s AND skill_id = %s", (user_id, skill_id))
-        already_linked = mycursor.fetchone()
-
+        already_linked = safe_query("SELECT 1 FROM User_skill WHERE user_id = %s AND skill_id = %s", (user_id, skill_id), fetchone=True)
         if already_linked:
             return jsonify({"message": f"Skill '{skill_name}' is already linked to user"}), 200
 
-        mycursor.execute("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", (user_id, skill_id))
-        mydb.commit()
+        res = safe_query("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", (user_id, skill_id), commit=True)
+        if res is None:
+            return jsonify({"message": "Database error"}), 500
 
-        return jsonify({
-            "message": f"Skill '{skill_name}' added successfully to user {user_id}"
-        }), 201
+        return jsonify({"message": f"Skill '{skill_name}' added successfully to user {user_id}"}), 201
 
-    except mysql.connector.Error as err:
-        print(f"Database error while adding skill: {err}")
-        return jsonify({"message": f"Database error: {err}"}), 500
+    except Exception as e:
+        log.error(f"Database error while adding skill: {e}")
+        return jsonify({"message": "Internal server error"}), 500
 
 
+# ---------- Global error handlers ----------
+@app.errorhandler(500)
+def internal_error(error):
+    log.error(f"Internal Server Error: {error}")
+    return jsonify({"error": "Internal server error"}), 500
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Not found"}), 404
+
+
+# ---------- Run app ----------
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Keep debug controlled by env var (do not leave debug True in production)
+    debug_flag = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    app.run(debug=debug_flag, port=int(os.getenv("PORT", 5000)))
