@@ -1,5 +1,6 @@
 {
   "name": "mariadb_ready_to_go",
+  "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -8,7 +9,13 @@
       ]
     }
   },
-  "postCreateCommand": "sudo apt update && sudo apt install mariadb-server python3 python3-pip -y && pip install python-dotenv && sudo service mariadb start && sudo mariadb -e \"CREATE DATABASE IF NOT EXISTS WorkHubDB; CREATE USER IF NOT EXISTS 'vscode'@'%' IDENTIFIED BY 'Mossad1234'; GRANT ALL PRIVILEGES ON WorkHubDB.* TO 'vscode'@'%'; FLUSH PRIVILEGES;\" && pip install -r .devcontainer/requirements.txt && python3 WorkHub/server/main.py && sudo npm install -g @angular/cli && cd WorkHub && sudo npm install && cd ..",
+  "remoteEnv": {
+    "DB_HOST": "localhost",
+    "DB_USER": "vscode",
+    "DB_PASSWORD": "Mossad1234",
+    "DB_NAME": "WorkHubDB"
+  },
+  "postCreateCommand": "sudo apt update && sudo apt install mariadb-server python3 python3-pip -y && sudo service mariadb start && pip install python-dotenv mysql-connector-python pandas flask flask-cors && sudo mariadb -e \"CREATE DATABASE IF NOT EXISTS $DB_NAME; CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD'; GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'%'; FLUSH PRIVILEGES;\" && sudo npm install -g @angular/cli && cd WorkHub && npm install && cd ..",
   "portsAttributes": {
     "4200": {
       "label": "Angular Dev Server",
