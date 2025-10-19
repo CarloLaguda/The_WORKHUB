@@ -7,6 +7,7 @@ import { ProjectJoinService } from '../service/joins.service';
 import { User } from '../models/user.model';
 import { UserService } from '../service/user.service';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-create-project',
@@ -83,27 +84,36 @@ export class CreateProject
     }
 
     this.projectService.createProject(
-      title,
-      description,
-      'open', 
-      maxPersone,
-      this.user.user_id
+    title,
+    description,
+    'open',
+    maxPersone,
+    this.user.user_id
     ).subscribe({
       next: (project: Project) => {
         console.log('✅ Progetto creato:', project);
+        console.log(this.selectedSkills)
+        console.log(this.selectedEnvs)
+        // Prepara array di chiamate per skills
+        const skillCalls = this.selectedSkills.map(skill => 
+          this.projectJoins.addSkillToProject(project.project_id, skill)
+        );
 
-        // Aggiungi le skill al progetto
-        this.selectedSkills.forEach(skill => {
-          this.projectJoins.addSkillToProject(project.project_id, skill).subscribe();
+        // Prepara array di chiamate per envs
+        const envCalls = this.selectedEnvs.map(env => 
+          this.projectJoins.addEnvToProject(project.project_id, env)
+        );
+
+        // Unisci tutte le chiamate in un unico observable
+        forkJoin([...skillCalls, ...envCalls]).subscribe({
+          next: () => {
+            this.showPopup('✅ Project created successfully with all skills and envs!', 'success');
+          },
+          error: (err) => {
+            console.error('❌ Error adding skills/envs:', err);
+            this.showPopup('❌ Project created but error adding skills or environments.', 'error');
+          }
         });
-
-        // Aggiungi gli ambiti al progetto
-        this.selectedEnvs.forEach(env => {
-          this.projectJoins.addEnvToProject(project.project_id, env).subscribe();
-        });
-
-        // Mostra il popup di successo
-        this.showPopup('✅ Project created successfully!', 'success');
       },
       error: (err) => {
         console.error('❌ Errore durante la creazione del progetto:', err);

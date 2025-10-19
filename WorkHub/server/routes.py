@@ -221,31 +221,36 @@ def create_project():
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
-    availability = data.get('availability', 'open')  # 👈 default open
+    availability = data.get('availability', 'open')
     max_persone = data.get('max_persone')
     creator_user_id = data.get('creator_user_id')
 
     if not all([title, description, max_persone, creator_user_id]):
         return jsonify({"message": "Missing required fields"}), 400
 
+    cursor = mydb.cursor()
+
     try:
-        mycursor.execute("""
+        # 1. Inserisci il progetto
+        cursor.execute("""
             INSERT INTO Project (title, description, availability, max_persone, is_full)
             VALUES (%s, %s, %s, %s, %s)
         """, (title, description, availability, max_persone, 1 if availability == 'full' else 0))
-        mydb.commit()
+        
+        project_id = cursor.lastrowid
 
-        project_id = mycursor.lastrowid
-
-        mycursor.execute("""
+        # 2. Inserisci l'associazione col creatore del progetto
+        cursor.execute("""
             INSERT INTO Project_user (project_id, user_id, assigned_at, is_creator)
             VALUES (%s, %s, %s, %s)
         """, (project_id, creator_user_id, datetime.now().strftime('%Y-%m-%d'), 1))
+
         mydb.commit()
 
         return jsonify({"message": "Project created successfully", "project_id": project_id}), 201
 
     except mysql.connector.Error as err:
+        mydb.rollback()
         return jsonify({"message": f"Error: {err}"}), 400
 
 
@@ -313,62 +318,96 @@ def join_project():
     
 #LEGARE SKILL A PROJECT
 @app.route('/api/join_projects_skill', methods=['POST'])
+@app.route('/api/join_projects_skill', methods=['POST'])
 def add_skill_to_project():
     data = request.get_json()
-    project_id = data['project_id']
-    skill_name = data['skill_name']  # Ora ricevi il nome della skill
-    
+    project_id = data.get('project_id')
+    skill_name = data.get('skill_name')
+
+    if not all([project_id, skill_name]):
+        return jsonify({"message": "Missing required fields"}), 400
+
+    cursor = mydb.cursor()
+
     try:
-        # Recupera l'id della skill dal nome
-        mycursor.execute("""
+        # 1. Recupera l'ID della skill dal nome
+        cursor.execute("""
             SELECT skill_id FROM Skill WHERE skill_name = %s
         """, (skill_name,))
-        result = mycursor.fetchone()
-        
+        result = cursor.fetchone()
+
         if not result:
+            cursor.close()
             return jsonify({"message": f"Skill '{skill_name}' not found"}), 404
-        
+
         skill_id = result[0]
-        
-        # Ora inserisci la relazione nel progetto
-        mycursor.execute("""
+
+        # 2. (Facoltativo) Verifica se la skill è già associata
+        cursor.execute("""
+            SELECT 1 FROM Project_skill WHERE project_id = %s AND skill_id = %s
+        """, (project_id, skill_id))
+        if cursor.fetchone():
+            cursor.close()
+            return jsonify({"message": f"Skill '{skill_name}' is already linked to the project"}), 409
+
+        # 3. Inserisci la relazione nel progetto
+        cursor.execute("""
             INSERT INTO Project_skill (project_id, skill_id)
             VALUES (%s, %s)
         """, (project_id, skill_id))
 
         mydb.commit()
         return jsonify({"message": f"Skill '{skill_name}' successfully added to the project"}), 200
+
     except mysql.connector.Error as err:
+        mydb.rollback()
         return jsonify({"message": f"Error: {err}"}), 400
+
 
 #LEGARE UN PROGETTO AD UN ENV
 @app.route('/api/join_projects_env', methods=['POST'])
 def add_env_to_project():
     data = request.get_json()
-    project_id = data['project_id']
-    env_name = data['env_name']  # Prendiamo il nome dell'env
-    
+    project_id = data.get('project_id')
+    env_name = data.get('env_name')
+
+    if not all([project_id, env_name]):
+        return jsonify({"message": "Missing required fields"}), 400
+
+    cursor = mydb.cursor()
+
     try:
-        # Recupera l'id dell'env dal nome
-        mycursor.execute("""
+        # 1. Trova l'ambit_id dell'env_name
+        cursor.execute("""
             SELECT ambit_id FROM Env WHERE ambit_name = %s
         """, (env_name,))
-        result = mycursor.fetchone()
-        
+        result = cursor.fetchone()
+
         if not result:
+            cursor.close()
             return jsonify({"message": f"Environment '{env_name}' not found"}), 404
-        
+
         env_id = result[0]
-        
-        # Inserisci la relazione progetto-env
-        mycursor.execute("""
+
+        # 2. (Facoltativo) Controlla se già esiste
+        cursor.execute("""
+            SELECT 1 FROM Project_env WHERE project_id = %s AND ambit_id = %s
+        """, (project_id, env_id))
+        if cursor.fetchone():
+            cursor.close()
+            return jsonify({"message": f"Environment '{env_name}' is already linked to the project"}), 409
+
+        # 3. Inserisci la relazione
+        cursor.execute("""
             INSERT INTO Project_env (project_id, ambit_id)
             VALUES (%s, %s)
         """, (project_id, env_id))
 
         mydb.commit()
         return jsonify({"message": f"Environment '{env_name}' successfully added to the project"}), 200
+
     except mysql.connector.Error as err:
+        mydb.rollback()
         return jsonify({"message": f"Error: {err}"}), 400
 
 
@@ -639,13 +678,13 @@ def add_user_skills_by_name():
         already_linked = mycursor.fetchone()
 
         if already_linked:
-            return jsonify({"message": f"Skill '{skill_name}' is already linked to user"}), 200
+            return jsonify({"message": f"Skill '{skill_name}' is already linked"}), 200
 
         mycursor.execute("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", (user_id, skill_id))
         mydb.commit()
 
         return jsonify({
-            "message": f"Skill '{skill_name}' added successfully to user {user_id}"
+            "message": f"Skill '{skill_name}' added successfully"
         }), 201
 
     except mysql.connector.Error as err:

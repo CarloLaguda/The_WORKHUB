@@ -25,7 +25,7 @@ export class Profile implements OnInit {
   tPass: boolean = false;
   showPassword: boolean = false;
 
-  Skill: string = "";
+  skill: string = "";
   //Skill Disponibili
   skills: string[] = [
     "HTML", "CSS", "JavaScript", "SQL", "Python", "Project Management",
@@ -51,8 +51,8 @@ export class Profile implements OnInit {
 
   startLogout() //Logout
   {
+    this.showPopup('success', 'You logged out');
     this.userService.logout();
-    this.showPopup('success', 'Logout effettuato con successo');
     this.router.navigate(['/signIn']);
   }
 
@@ -66,16 +66,16 @@ export class Profile implements OnInit {
 
     const data: any = {
       user_id: this.user.user_id,
-      skill_names: this.Skill
+      skill_names: this.skill
     };
 
     this.userService.addUserSkills(data).subscribe({
       next: (res) => {
         this.userService.getCurrentUser(this.user!.user_id);
-        this.showPopup('success', 'Skill aggiunta con successo');
+        this.showPopup('success', res.message);
       },
       error: (err) => {
-        this.showPopup('error', 'Errore nell\'aggiunta della skill');
+        this.showPopup('error', err.message);
       }
     });
   }
