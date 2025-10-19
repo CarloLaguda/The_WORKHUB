@@ -5,7 +5,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # loads .env in development if present
+load_dotenv(/workspaces/The_WORKHUB/.env)  # loads .env in development if present
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_USER = os.getenv("DB_USER", "vscode")
