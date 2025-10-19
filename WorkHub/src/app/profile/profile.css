@@ -94,7 +94,7 @@ select:focus {
 }
 
 .progetti{
-    padding: 20px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -107,6 +107,7 @@ select:focus {
 
 .cambioBtn{
     background-color: rgb(255, 124, 76);
+    margin-bottom: 10px;
     color: white;
     border: 2px solid orangered;
     border-radius: 6px;
@@ -128,12 +129,19 @@ select:focus {
 
 .prova{
     width: 100%;
-    border: solid orangered 1px;
-    height: 100px;
+    border: solid orangered 2px;
+    height: 130px;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 20px;
 }
 
+hr{
+  border: none;
+  height: 1px;
+  background-color:orangered;
+}
 .basicInfo, .otherInfo, .statusInfo{
     padding: 20px;
     width: 60%;
