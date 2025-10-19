@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjectJoinService{
-  private apiUrl = 'https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api'; // Base URL
+  private apiUrl = 'https://friendly-parakeet-977ppqww9v4jh7wrp-5000.app.github.dev/api'; // Base URL
 
   constructor(private http: HttpClient) {}
 

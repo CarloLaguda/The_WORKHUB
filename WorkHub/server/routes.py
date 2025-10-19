@@ -377,16 +377,16 @@ def add_env_to_project():
 def get_project_details():
     base_select = """
     SELECT
-    Project.project_id,
-    Project.title,
-    Project.description,
-    Project.availability,
-    Project.max_persone,
-    Project.is_full,
-    CONCAT(User.first_name, ' ', User.last_name) AS creator_name,
-    GROUP_CONCAT(DISTINCT Skill.skill_name SEPARATOR ', ') AS required_skills,
-    GROUP_CONCAT(DISTINCT Env.ambit_name SEPARATOR ', ') AS environments,
-    COALESCE(Project_user_count.user_count, 0) AS user_count
+        Project.project_id,
+        Project.title,
+        Project.description,
+        Project.availability,
+        Project.max_persone,
+        Project.is_full,
+        CONCAT(User.first_name, ' ', User.last_name) AS creator_name,
+        GROUP_CONCAT(DISTINCT Skill.skill_name SEPARATOR ', ') AS required_skills,
+        GROUP_CONCAT(DISTINCT Env.ambit_name SEPARATOR ', ') AS environments,
+        COALESCE(Project_user_count.user_count, 0) AS user_count
     """
 
     base_from_and_joins = """
@@ -413,7 +413,7 @@ def get_project_details():
             ON Creator_link.user_id = User.user_id
     """
 
-    #Filtri
+    # --- Filtri dinamici ---
     conditions = []
     params = []
 
@@ -439,10 +439,19 @@ def get_project_details():
         conditions.append("CONCAT(User.first_name, ' ', User.last_name) LIKE %s")
         params.append(f"%{creator_name}%")
 
+    # --- Filtro per ambiente corretto ---
     if environment:
-        conditions.append("Env.ambit_name LIKE %s")
+        conditions.append("""
+            Project.project_id IN (
+                SELECT Project_env.project_id
+                FROM Project_env
+                JOIN Env ON Project_env.ambit_id = Env.ambit_id
+                WHERE Env.ambit_name LIKE %s
+            )
+        """)
         params.append(f"%{environment}%")
 
+    # --- Composizione query finale ---
     query = base_select + " " + base_from_and_joins
 
     if conditions:
@@ -457,6 +466,7 @@ def get_project_details():
 
         mycursor.execute(query, tuple(params))
 
+        # Caso 1: ricerca per ID singolo
         if project_id and not (disponibilita or skills or creator_name or environment):
             project = mycursor.fetchone()
             if not project:
@@ -466,18 +476,19 @@ def get_project_details():
             project_dict = dict(zip(column_names, project))
             return jsonify(project_dict), 200
 
-        else:
-            projects = mycursor.fetchall()
-            if not projects:
-                return jsonify({"message": "No projects found matching criteria"}), 404
+        # Caso 2: lista di progetti filtrati
+        projects = mycursor.fetchall()
+        if not projects:
+            return jsonify({"message": "No projects found matching criteria"}), 404
 
-            column_names = [desc[0] for desc in mycursor.description]
-            projects_list = [dict(zip(column_names, p)) for p in projects]
-            return jsonify(projects_list), 200
+        column_names = [desc[0] for desc in mycursor.description]
+        projects_list = [dict(zip(column_names, p)) for p in projects]
+        return jsonify(projects_list), 200
 
     except mysql.connector.Error as err:
         print(f"Errore durante l'esecuzione della query get_project_details: {err}")
         return jsonify({"error": "Database query error"}), 500
+
 
 #PROGETTI DELL'UTENTE LOGGATO
 @app.route('/api/user_projects', methods=['GET'])

@@ -12,7 +12,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class LoginService { //Service per fare la login 
-  private apiUrl = 'https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api/login';
+  private apiUrl = 'https://friendly-parakeet-977ppqww9v4jh7wrp-5000.app.github.dev/api/login';
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import { Project } from '../models/project.model';
 })
 export class ProjectService //SERVICE PER CREAZIONE E GET DI UN PROGETTO
 {
-  private apiUrl = 'https://curly-space-winner-q77ww966q5vrcg4v-5000.app.github.dev/api'; // URL della tua API
+  private apiUrl = 'https://friendly-parakeet-977ppqww9v4jh7wrp-5000.app.github.dev/api'; // URL della tua API
 
   constructor(private http: HttpClient) {}
 
