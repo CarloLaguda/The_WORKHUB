@@ -1,5 +1,5 @@
 <div>
-    <button (click)="startLogout()">LOGOUT</button>
+    <button class="logout-btn" (click)="startLogout()">LOGOUT</button>
 </div>
 <div class="container">
     <div class="center">
@@ -7,7 +7,7 @@
             <div class="basicInfo">
                 <div class="profileImage"></div>
                 <h1>{{user?.first_name}} {{user?.last_name}}</h1>
-                <h3>{{user?.username}}</h3>
+                <h3 style="color: orange;">{{user?.username}}</h3>
             </div>
             <div class="separation"></div>
             <div class="otherInfo">
@@ -17,10 +17,10 @@
                         <div class="email-edit">
                             @if (tCountry) {
                                 <input type="text" placeholder="Inseerisci paese" #country>
-                                <button (click)="updateUser('country', country.value)">Aggiorna</button>
-                                <button class="editBtn" (click)="toggleCountry()">Chiudi</button>
+                                <button class="okBtn" (click)="updateUser('country', country.value)">OK</button>
+                                <button class="editBtn" (click)="toggleCountry()">🔧</button>
                             } @else {
-                                <button class="editBtn" (click)="toggleCountry()">Edit</button>
+                                <button class="editBtn" (click)="toggleCountry()">🔧</button>
                             }
                         </div>
                     </div>
@@ -34,10 +34,10 @@
                                 <option value="libero">Libero</option>
                                 <option value="occupato">Occupato</option>
                             </select>
-                            <button (click)="updateUser('status', selectedStatus)">Aggiorna</button>
-                            <button class="editBtn" (click)="toggleStatus()">Chiudi</button>
+                            <button class="okBtn" (click)="updateUser('status', selectedStatus)">OK</button>
+                            <button class="editBtn" (click)="toggleStatus()">🔧</button>
                         } @else {
-                            <button class="editBtn" (click)="toggleStatus()">Edit</button>
+                            <button class="editBtn" (click)="toggleStatus()">🔧</button>
                         }
                     </div>
                 </div>
@@ -46,10 +46,10 @@
                     <div class="email-edit">
                         @if (tAnnixp) {
                             <input type="number" placeholder="Inseerisci anni" #annixp>
-                            <button (click)="updateUser('anni_di_esperienza', annixp.value)">Aggiorna</button>
-                            <button class="editBtn" (click)="toggleAnniexp()">Chiudi</button>
+                            <button class="okBtn" (click)="updateUser('anni_di_esperienza', annixp.value)">OK</button>
+                            <button class="editBtn" (click)="toggleAnniexp()">🔧</button>
                         } @else {
-                            <button class="editBtn" (click)="toggleAnniexp()">Edit</button>
+                            <button class="editBtn" (click)="toggleAnniexp()">🔧</button>
                         }
                     </div>
                 </div>
@@ -61,10 +61,10 @@
                     <div class="email-edit">
                         @if (tUser) {
                             <input type="text" placeholder="Nuovo username" #nuovaUser>
-                            <button (click)="updateUser('username', nuovaUser.value)">Aggiorna</button>
-                            <button class="editBtn" (click)="toggleUsername()">Chiudi</button>
+                            <button class="okBtn" (click)="updateUser('username', nuovaUser.value)">OK</button>
+                            <button class="editBtn" (click)="toggleUsername()">🔧</button>
                         } @else {
-                            <button class="editBtn" (click)="toggleUsername()">Edit</button>
+                            <button class="editBtn" (click)="toggleUsername()">🔧</button>
                         }
                     </div>
                 </div>
@@ -73,10 +73,10 @@
                     <div class="email-edit">
                         @if (tMail) {
                             <input type="email" placeholder="Nuova email" #nuovaMail>
-                            <button (click)="updateUser('email', nuovaMail.value)">Aggiorna</button>
-                            <button class="editBtn" (click)="toggleMail()">Chiudi</button>
+                            <button class="okBtn" (click)="updateUser('email', nuovaMail.value)">OK</button>
+                            <button class="editBtn" (click)="toggleMail()">🔧</button>
                         } @else {
-                            <button class="editBtn" (click)="toggleMail()">Edit</button>
+                            <button class="editBtn" (click)="toggleMail()">🔧</button>
                         }
                     </div>
                 </div>
@@ -95,22 +95,23 @@
                                     mostra
                                 }
                             </button>
-                            <button (click)="updateUser('password', nuovapassword.value)">Aggiorna</button>
-                            <button class="editBtn" (click)="togglePass()">Chiudi</button>
+                            <button class="okBtn" (click)="updateUser('password', nuovapassword.value)">OK</button>
+                            <button class="editBtn" (click)="togglePass()">🔧</button>
                         } @else {
-                            <button class="editBtn" (click)="togglePass()">Edit</button>
+                            <button class="editBtn" (click)="togglePass()">🔧</button>
                         }
                     </div>
                 </div>
-                <hr>
-                <div class="editInfo" routerLink="/users">
-                    <button>Visualizza gli altri utenti</button>
                 </div>
-                <br>
-                <div class="editInfo" routerLink="/projects">
-                    <button>Visualizza i progetti</button>
+                <div class="separation"></div>
+                <div class="statusInfo2">
+                    <div class="editInfo2" routerLink="/users">
+                        <strong><p>VISUALIZZA ALTRI UTENTI</p></strong>
+                    </div>
+                    <div class="editInfo2" routerLink="/projects">
+                        <strong><p>VISUALIZZA I PROGETTI</p></strong>
+                    </div>
                 </div>
-            </div>
         </div>
         <div class="info2">
             <div class="skillSet">
@@ -123,7 +124,8 @@
                 </select>
                 <p>Le tue skils: {{user?.skills}}</p>
             </div>
-            <button (click) = "addUserSkill()">Aggiungi alle tue skill</button>
+            <button class="cambioBtn" (click) = "addUserSkill()">Aggiungi alle tue skill</button>
+            <div class="separation2"></div>
             <div class="progetti">
                 <h2>Progetti</h2>
                 @if(progetti.length === 0){
@@ -134,7 +136,7 @@
                     }
                 }
             </div>
-            <button routerLink="/createProject">Crea il tuo progetto</button>
+            <button class="cambioBtn" routerLink="/createProject">Crea il tuo progetto</button>
         </div>
     </div>
 </div>

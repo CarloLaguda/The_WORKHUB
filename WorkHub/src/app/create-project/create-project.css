@@ -1,44 +1,78 @@
-/* Popup */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+/* Contenitore a schermo intero centrato */
+.page-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  height: 100vh;              /* altezza intera finestra */
+  background: orangered; /* sfondo sfumato */
 }
 
-.popup {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
+* {
+    font-family: Calibri, 'Trebuchet MS', sans-serif;
+
+}/* Struttura principale */
+
+
+/* Box centrale */
+.project-box {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  width: 600px;               /* larghezza fissa tipo quadrato */
+  max-width: 90%;             /* responsive */
   text-align: center;
-  width: 300px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.popup.success {
-  border-left: 5px solid green;
+/* Stile per header utente */
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-.popup.error {
-  border-left: 5px solid red;
-}
-
-.popup button {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: #4CAF50;
+/* Bottoni generici */
+button {
+  background-color: rgb(255, 124, 76);
   color: white;
-  border: none;
-  border-radius: 5px;
+  border: 2px solid orangered;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.popup button:hover {
-  background-color: #45a049;
+button:hover {
+  background-color: white;
+  color: orangered;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 88, 22, 0.3);
+}
+
+/* Input e textarea */
+input, textarea, select {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Multiselect */
+.multi-select {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+.oggetto{
+  border: 1px solid orangered;
+  border-radius: 4px;
+  padding: 3px;
+  color: black;
 }

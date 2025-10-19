@@ -1,57 +1,62 @@
-<div class="user-header">
-  <div><strong>Utente loggato:</strong> {{ user?.first_name }}</div>
-  <div><button routerLink="/profile">Torna al profilo</button></div>
-</div>
+<div class="page-container">
+  <div class="project-box">
+    
+    <div class="user-header">
+      <div><strong>Utente loggato:</strong> {{ user?.first_name }}</div>
+      <div><button routerLink="/profile">Torna al profilo</button></div>
+    </div>
 
-<hr>
+    <hr>
 
-<label>
-  Nome Progetto:
-  <input type="text" placeholder="Nome progetto" #title>
-</label>
-<br>
-
-<label>
-  Descrizione:
-  <textarea placeholder="Descrizione progetto" #description></textarea>
-</label>
-<br>
-
-<label>
-  Numero massimo di persone:
-  <input type="number" #maxPersone>
-</label>
-
-<hr>
-
-<!-- 🔹 Skill multiple -->
-<h3>Seleziona Skill</h3>
-<div class="multi-select">
-  @for (skill of skillsList; track skill) {
     <label>
-      <input type="checkbox" [checked]="selectedSkills.includes(skill)" (change)="toggleSkill(skill)">
-      {{ skill }}
+      Nome Progetto:
+      <input type="text" placeholder="Nome progetto" #title>
     </label>
-  }
-</div>
+    <br>
 
-<!-- 🔹 Ambiti multipli -->
-<h3>Seleziona Ambiti</h3>
-<div class="multi-select">
-  @for (env of envList; track env) {
     <label>
-      <input type="checkbox" [checked]="selectedEnvs.includes(env)" (change)="toggleEnv(env)">
-      {{ env }}
+      Descrizione:
+      <textarea placeholder="Descrizione progetto" #description></textarea>
     </label>
-  }
+    <br>
+
+    <label>
+      Numero massimo di persone:
+      <input type="number" #maxPersone>
+    </label>
+
+    <hr>
+
+    <h3>Seleziona Skill</h3>
+    <div class="multi-select">
+      @for (skill of skillsList; track skill) {
+        <label class="oggetto">
+          <input type="checkbox" [checked]="selectedSkills.includes(skill)" (change)="toggleSkill(skill)">
+          {{ skill }}
+        </label>
+      }
+    </div>
+
+    <h3>Seleziona Ambiti</h3>
+    <div class="multi-select">
+      @for (env of envList; track env) {
+        <label class="oggetto">
+          <input type="checkbox" [checked]="selectedEnvs.includes(env)" (change)="toggleEnv(env)">
+          {{ env }}
+        </label>
+      }
+    </div>
+
+    <hr>
+
+    <button (click)="createProject(title.value, description.value, maxPersone.valueAsNumber)">
+      Crea progetto
+    </button>
+
+  </div>
 </div>
 
-<hr>
-
-<button (click)="createProject(title.value, description.value, maxPersone.valueAsNumber)">
-  Crea progetto
-</button>
-
+<!-- Popup (resta invariato) -->
 <div class="popup-overlay" *ngIf="popupVisible">
   <div class="popup" [ngClass]="popupType">
     <h2>{{ popupType === 'success' ? '✅ Successo' : '⚠️ Errore' }}</h2>
@@ -59,4 +64,3 @@
     <button (click)="closePopup()">Chiudi</button>
   </div>
 </div>
-

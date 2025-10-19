@@ -1,17 +1,41 @@
+* {
+    font-family: Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
 .container{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    height: 100vh;
+    height: 96vh;
     width: 100vw;
 }
+input {
+    padding: 3px;
+    margin-left: 5px;
+    box-sizing: border-box;
+    border: 0px solid;
+    border-bottom: 1px solid rgb(122, 122, 122);
+    background-color: rgb(255, 255, 255);
+    transition: all 0.2s ease;
+}
 
+
+
+input:focus,
+select:focus {
+    outline: none; /* rimuove il contorno blu */
+    border-bottom: 1px solid orangered; /* bordo arancione */
+    background-color: white;
+    box-shadow: 0 3px 5px rgba(255, 69, 0, 0.2); /* effetto glow */
+    transition: all 0.6s ease;
+}
 .center{
     /*border: green solid;*/
     width: 60vw;
-    height: 80vh;
+    height: 100vh;
     display: flex;
     flex-direction: row;
 }
@@ -27,6 +51,20 @@
   gap: 6px;
 }
 
+.okBtn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: orangered;
+    background-color: white;
+    padding: 2px;
+    border: 2px solid orangered;
+    border-radius: 4px;
+    transition: all 0.8s ease;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* ombra iniziale invisibile */
+    cursor: pointer;
+}
+
 .info{
     display: flex;
     flex-direction: column;
@@ -39,18 +77,53 @@
     background-color: orangered;
     width: 10vw;
     aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    margin-bottom: 20px ;
 }
 
 .skillSet{
     display: flex;
     flex-direction: column;
     padding: 20px;
+    margin-top: 20%;
+    background-color: rgb(255, 135, 91);
+    color: white;
+    border-radius: 6px;
+    border: 2px solid orangered ;
+    border-bottom: 8px solid orangered;
 }
 
 .progetti{
     padding: 20px;
     display: flex;
     flex-direction: column;
+    padding: 20px;
+    background-color: rgb(255, 135, 91);
+    color: white;
+    border-radius: 6px;
+    border: 2px solid orangered ;
+    border-bottom: 8px solid orangered;
+}
+
+.cambioBtn{
+    background-color: rgb(255, 124, 76);
+    color: white;
+    border: 2px solid orangered;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 9999; /* resta sopra agli altri elementi */
+}
+
+.cambioBtn:hover {
+    background-color: white;
+    color: orangered;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 88, 22, 0.3);
+}
 }
 
 .prova{
@@ -63,12 +136,23 @@
 
 .basicInfo, .otherInfo, .statusInfo{
     padding: 20px;
-    width: 40%;
+    width: 60%;
+    color: orangered;
 }
-
+.statusInfo2{
+  padding: 20px;
+    width: 60%;  
+}
 .separation{
     border-top: solid 1px orangered;
-    width: 40%;
+    width: 60%;
+}
+
+.separation2{
+    border-top: solid 1px orangered;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .expYears{
@@ -79,10 +163,85 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    color: white;
+    background-color: rgb(255, 124, 76);
+    margin: 7px;
+    padding: 7px;
+    border: 2px solid orangered;
+    border-radius: 4px;
+    transition: all 0.8s ease;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* ombra iniziale invisibile */
+    cursor: pointer;
 }
 
-.editBtn{
-    height: min-content;
+.editInfo:hover{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: orangered;
+    background-color: rgb(255, 255, 255);
+    margin: 7px;
+    padding: 7px;
+    border: 2px solid orangered;
+    border-radius: 4px;
+    transform: translateY(-2px); /* effetto “sale” */
+    box-shadow: 0 6px 15px rgba(255, 88, 22, 0.25); /* ombra sotto */
+}
+
+
+
+.editInfo2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* testo centrato orizzontalmente */
+    align-items: center;     /* testo centrato verticalmente */
+    text-transform: uppercase; /* tutto maiuscolo */
+    color: white;
+    background-color: rgb(255, 124, 76);
+    margin: 7px;
+    border: 2px solid orangered;
+    border-radius: 4px;
+    transition: all 0.8s ease;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0); /* ombra iniziale invisibile */
+    cursor: pointer;
+}
+
+.editInfo2:hover {
+    color: orangered;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid orangered;
+    border-radius: 4px;
+    transform: translateY(-2px); /* effetto “sale” */
+    box-shadow: 0 6px 15px rgba(255, 88, 22, 0.25); /* ombra sotto */
+}
+
+
+
+
+
+
+.editBtn {
+    position: absolute;
+    right: -40px;
+    bottom: 4px;
+    background-color: rgb(255, 124, 76);
+    border: 2px solid orangered;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.7s ease;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.editBtn:hover {
+    background-color: white;
+    color: orangered;
 }
 
 h1, h3{
@@ -137,4 +296,26 @@ h4{
 
 .popup button:hover {
   background-color: #45a049;
+}
+
+.logout-btn {
+    position: fixed;
+    top: 10px;        /* distanza dal bordo superiore */
+    left: 10px;       /* distanza dal bordo sinistro */
+    background-color: rgb(255, 124, 76);
+    color: white;
+    border: 2px solid orangered;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 9999; /* resta sopra agli altri elementi */
+}
+
+.logout-btn:hover {
+    background-color: white;
+    color: orangered;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 88, 22, 0.3);
 }
