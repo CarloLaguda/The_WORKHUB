@@ -7,7 +7,7 @@ import { User } from '../models/user.model';
 providedIn: 'root'
 })
 export class UserService {//SERVICE per la gestione degli uUSER
-  private apiUrl = 'https://obscure-succotash-4jjxxg66j75phjvqw-5000.app.github.dev/api';
+  private apiUrl = 'https://fictional-journey-q77ww966qrvq34pwv-5000.app.github.dev/api';
   private currentUserSubject: BehaviorSubject<User | null>; //User Loggato
 
   constructor(private http: HttpClient) {
