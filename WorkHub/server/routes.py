@@ -215,9 +215,7 @@ def search_users():
         print(f"Errore durante l'esecuzione della query nella route search_users: {err}")
         return jsonify({"error": "Errore nella query del database"}), 500
 
-
-
-#CREAZIONE
+#CREAZIONE DI UN PROGETTO
 @app.route('/api/create_projects', methods=['POST'])
 def create_project():
     data = request.get_json()
@@ -415,7 +413,7 @@ def get_project_details():
             ON Creator_link.user_id = User.user_id
     """
 
-    # --- Costruzione dinamica dei filtri ---
+    #Filtri
     conditions = []
     params = []
 
@@ -445,7 +443,6 @@ def get_project_details():
         conditions.append("Env.ambit_name LIKE %s")
         params.append(f"%{environment}%")
 
-    # --- Costruzione finale della query ---
     query = base_select + " " + base_from_and_joins
 
     if conditions:
@@ -482,7 +479,7 @@ def get_project_details():
         print(f"Errore durante l'esecuzione della query get_project_details: {err}")
         return jsonify({"error": "Database query error"}), 500
 
-
+#PROGETTI DELL'UTENTE LOGGATO
 @app.route('/api/user_projects', methods=['GET'])
 def get_user_projects():
     user_id = request.args.get('user_id', type=int)
@@ -549,25 +546,19 @@ def get_user_projects():
         print(f"Database error in get_user_projects: {err}")
         return jsonify({"error": "Database query error"}), 500
 
-
+#Aggiorna dati utente
 @app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
-
-    # 🔧 Tutti i campi aggiornabili nella tabella User, incluso password
     update_fields = [
         'username',
         'email',
-        'first_name',
-        'last_name',
-        'eta',
-        'gender',
         'status',
         'anni_di_esperienza',
         'country',
-        'password'  # <--- aggiunto
+        'password'  
     ]
 
     updates = []
@@ -607,6 +598,7 @@ def update_user():
         print(f"Error updating user data: {err}")
         return jsonify({"message": f"Database error: {err}"}), 500
 
+#Aggiungi una skill allo user
 @app.route('/api/add_user_skills_by_name', methods=['POST'])
 def add_user_skills_by_name():
     data = request.get_json()
@@ -624,7 +616,6 @@ def add_user_skills_by_name():
         return jsonify({"message": "A single skill name as string is required"}), 400
 
     try:
-        # 🔹 Cerca la skill corrispondente
         mycursor.execute("SELECT skill_id, skill_name FROM Skill WHERE skill_name = %s", (skill_name,))
         result = mycursor.fetchone()
 
@@ -633,14 +624,12 @@ def add_user_skills_by_name():
 
         skill_id = result[0]
 
-        # 🔹 Controlla se la skill è già associata all'utente
         mycursor.execute("SELECT 1 FROM User_skill WHERE user_id = %s AND skill_id = %s", (user_id, skill_id))
         already_linked = mycursor.fetchone()
 
         if already_linked:
             return jsonify({"message": f"Skill '{skill_name}' is already linked to user"}), 200
 
-        # 🔹 Inserisci l'associazione
         mycursor.execute("INSERT INTO User_skill (user_id, skill_id) VALUES (%s, %s)", (user_id, skill_id))
         mydb.commit()
 
@@ -654,5 +643,4 @@ def add_user_skills_by_name():
 
 
 if __name__ == '__main__':
-    # You can change the port as needed
     app.run(debug=True, port=5000)
