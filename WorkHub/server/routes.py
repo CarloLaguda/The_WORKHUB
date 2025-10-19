@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 import pandas as pd
+import bcrypt
 
 # CARICO LE VARIABILI DALL'ENV
 load_dotenv("/workspaces/The_WORKHUB/.env")  # or just load_dotenv() if .env is in the same folder
@@ -35,14 +36,13 @@ except mysql.connector.Error as err:
     print(f"⚠️ Errore nella connessione al database: {err}")
 
 
-#ROTTA PER REGISTRAZIONE UTENTI
+# --- REGISTER ---
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
 
-    # --- CAMPI OBBLIGATORI ---
     required_fields = ['username', 'email', 'password', 'first_name', 'last_name', 'eta', 'gender']
     for field in required_fields:
         if field not in data:
@@ -52,40 +52,39 @@ def register():
     email = data['email']
 
     try:
-        # --- Controllo se username esiste già ---
+        # --- Check if username exists ---
         mycursor.execute("SELECT user_id FROM User WHERE username = %s", (username,))
-        existing_user = mycursor.fetchone()
-        if existing_user:
-            return jsonify({"message": "Username already exists"}), 409  # 409 Conflict
+        if mycursor.fetchone():
+            return jsonify({"message": "Username already exists"}), 409
 
-        # (Opzionale) Controllo se email esiste già
+        # --- Check if email exists ---
         mycursor.execute("SELECT user_id FROM User WHERE email = %s", (email,))
-        existing_email = mycursor.fetchone()
-        if existing_email:
+        if mycursor.fetchone():
             return jsonify({"message": "Email already registered"}), 409
 
-        # --- Criptazione password ---
-        password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
+        # --- Hash the password with bcrypt ---
+        password_bytes = data['password'].encode('utf-8')
+        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
 
-        # --- Campi opzionali ---
+        # --- Optional fields ---
         status = data.get('status') or None
         anni_di_esperienza = data.get('anni_di_esperienza') or None
         country = data.get('country') or None
 
-        # --- Inserimento nuovo utente ---
+        # --- Insert new user ---
         mycursor.execute("""
             INSERT INTO User (
                 username, email, password, first_name, last_name, eta, gender,
                 status, anni_di_esperienza, country
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            username, email, password_hash,
+            username, email, hashed_password,
             data['first_name'], data['last_name'],
             data['eta'], data['gender'],
             status, anni_di_esperienza, country
         ))
-
         mydb.commit()
+
         return jsonify({"message": "User successfully registered"}), 201
 
     except mysql.connector.Error as err:
@@ -93,33 +92,30 @@ def register():
         return jsonify({"message": f"Database error: {err}"}), 500
 
 
-#LOGIN UTENTE
+# --- LOGIN ---
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-
     if not data or 'password' not in data:
         return jsonify({"message": "Password is required"}), 400
 
-    #ACCESSO O CON USERNAME O CON EMAIL
     identifier = data.get('username') or data.get('email')
     if not identifier:
         return jsonify({"message": "Username or email is required"}), 400
-    
-    password_hash = hashlib.sha256(data['password'].encode()).hexdigest()
 
     try:
-        #CERCO USER O PER USERNAME O PER EMAIL
+        # --- Get user by username or email ---
         mycursor.execute("""
             SELECT user_id, password FROM User WHERE username = %s OR email = %s
         """, (identifier, identifier))
-        
         user = mycursor.fetchone()
-        #CONFRONTA PASSWORD
-        if user and user[1] == password_hash:
-            return jsonify({"message": "Login successful", "user_id": user[0]}), 200
-        else:
-            return jsonify({"message": "Invalid credentials"}), 401
+
+        if user:
+            hashed_password = user[1].encode('utf-8')
+            if bcrypt.checkpw(data['password'].encode('utf-8'), hashed_password):
+                return jsonify({"message": "Login successful", "user_id": user[0]}), 200
+
+        return jsonify({"message": "Invalid credentials"}), 401
 
     except mysql.connector.Error as err:
         print(f"Database error during login: {err}")
@@ -567,19 +563,20 @@ def get_user_projects():
         print(f"Database error in get_user_projects: {err}")
         return jsonify({"error": "Database query error"}), 500
 
-#Aggiorna dati utente
+# Aggiorna dati utente con bcrypt
 @app.route('/api/update_user', methods=['PUT'])
 def update_user():
     data = request.get_json()
     if not data:
         return jsonify({"message": "Missing JSON data"}), 400
+
     update_fields = [
         'username',
         'email',
         'status',
         'anni_di_esperienza',
         'country',
-        'password'  
+        'password'  # 🔐 user password will be hashed with bcrypt
     ]
 
     updates = []
@@ -588,8 +585,8 @@ def update_user():
     for field in update_fields:
         if field in data and data[field] is not None:
             if field == 'password':
-                # 🔐 Criptazione della nuova password
-                hashed_password = hashlib.sha256(data[field].encode()).hexdigest()
+                # 🔐 Hash the new password with bcrypt
+                hashed_password = bcrypt.hashpw(data[field].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                 updates.append(f"{field} = %s")
                 params.append(hashed_password)
             else:
