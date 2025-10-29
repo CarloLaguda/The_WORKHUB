@@ -41,11 +41,11 @@ try:
         database=DB_NAME
     )
     mycursor = mydb.cursor()
-    log.info("✅ Connessione al database MySQL stabilita con successo per l'API!")
+    log.info("Connessione al database MySQL stabilita con successo per l'API!")
 except mysql.connector.Error as err:
     mydb = None
     mycursor = None
-    log.error(f"⚠️ Errore nella connessione al database per l'API: {err}")
+    log.error(f"Errore nella connessione al database per l'API: {err}")
 
 
 # ---------- Helper: safe_query ----------
@@ -56,7 +56,7 @@ def safe_query(query, params=None, fetchone=False, fetchall=False, commit=False)
     - Returns None on error (and logs the error).
     """
     if not mydb or not mycursor:
-        log.error("⚠️ Database connection not available.")
+        log.error("Database connection not available.")
         return None
 
     try:
